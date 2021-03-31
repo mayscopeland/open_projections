@@ -1,5 +1,5 @@
 # Open Projections
-## Completely transparent, continually updated baseball forecasts
+## Completely transparent baseball forecasts for every point in a season
 
 ### Two Keys
 
