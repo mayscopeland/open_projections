@@ -1,7 +1,10 @@
 # Open Projections
 ## Completely transparent, continually updated baseball forecasts
 
-Unlike most projection systems, which use stats for past _seasons_, the Open Projections look at stats for each _day_. As a result, it can generate projections for any point in a season.
+### Two Keys
+
+1. Unlike most projection systems, which use stats for past _seasons_, the Open Projections look at stats for each _day_. As a result, it can generate projections for any point in a season.
+2. The Open Projections are also completely open source, in contrast to the black boxes of other projections. The methodology is available for anyone to critique and (hopefully) improve.
 
 ### Methodology
 The basic formula weights all past stats by 0.9994^daysAgo for hitters, and 0.9990^daysAgo for pitchers. (These numbers come from Tom Tango, and are similar to the Marcel projections' seasonal weights of 5/4/3 for hitters and 3/2/1 for pitchers.) Stats are regressed to the mean using the league average, weighted at 15% of the PA for the player with the most PA in the sample.
