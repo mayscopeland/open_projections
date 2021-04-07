@@ -7,9 +7,9 @@ import glob
 
 
 def main():
-    build_monthly_gamelogs("2021", "03")
-    combine_gamelogs()
-    #build_gamelogs("2021")
+    #build_monthly_gamelogs("2021", "03")
+    #combine_gamelogs()
+    build_yearly_gamelogs("2014")
     #combine_player_logs(670623)
 
 def combine_player_logs(player_id):
@@ -66,7 +66,7 @@ def quality_start(s):
     return 0
 
 
-def build_gamelogs(year):
+def build_yearly_gamelogs(year):
 
     bb_months = ["01","02","03","04","05","06","07","08","09","10","11","12"]
 
