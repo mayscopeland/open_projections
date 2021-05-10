@@ -8,7 +8,7 @@ def main():
 
     # project(545361, "2021-04-01")
 
-    project_all("2021-04-01")
+    project_all("2021-05-10")
 
 
 def project_all(projection_date_str):
@@ -105,6 +105,9 @@ def project(projection_date_str, settings, is_batting):
     # Our regression to the mean will be 15% of the top player's PA
     max_pa = pr[appearances].max()
     regression_pa = LG_AVG_PCT * max_pa
+
+    # Clear out players with too few appearances (long-retired, pitchers batting, etc.)
+    pr = pr[pr[appearances] > (max_pa * 0.1)]
 
     # This should only be league average of MLB players
     lg_avg = pr.mean()
