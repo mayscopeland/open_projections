@@ -1,9 +1,8 @@
 import pandas as pd
 import requests
-import os
 import datetime
 import calendar
-import glob
+from pathlib import Path
 
 
 def main():
@@ -12,26 +11,10 @@ def main():
     build_yearly_gamelogs("2014")
     #combine_player_logs(670623)
 
-def combine_player_logs(player_id):
-    filepath = os.path.dirname(__file__)
-    all_batting = glob.glob(filepath + "\\data\\batting\\*.csv")
-
-    li = []
-
-    for filename in all_batting:
-        df = pd.read_csv(filename, index_col=None, header=0)
-        li.append(df)
-
-    frame = pd.concat(li, axis=0, ignore_index=True)
-
-    player = frame[frame["player_id"] == player_id]
-    print(player.head(20))
-    player.to_csv(os.path.dirname(__file__) + "\\data\\player.csv")
-
 
 def combine_gamelogs():
-    filepath = os.path.dirname(__file__)
-    all_batting = glob.glob(filepath + "\\data\\batting\\*.csv")
+    filepath = Path(__file__).parent
+    all_batting = (filepath / "stats" / "batting").glob("*.csv")
 
     li = []
 
@@ -41,9 +24,9 @@ def combine_gamelogs():
 
     frame = pd.concat(li, axis=0, ignore_index=True)
     
-    frame.to_csv(os.path.dirname(__file__) + "\\data\\all_batting.csv", index=False)
+    frame.to_csv(filepath / "stats" / "batting.csv", index=False)
 
-    all_pitching = glob.glob(filepath + "\\data\\pitching\\*.csv")
+    all_pitching = (filepath / "stats" / "pitching").glob("*.csv")
 
     li = []
 
@@ -54,7 +37,7 @@ def combine_gamelogs():
     frame = pd.concat(li, axis=0, ignore_index=True)
     frame["QS"] = frame.apply(quality_start, axis=1)
     
-    frame.to_csv(os.path.dirname(__file__) + "\\data\\all_pitching.csv", index=False)
+    frame.to_csv(filepath / "stats" / "pitching.csv", index=False)
 
 
 def quality_start(s):
@@ -90,8 +73,10 @@ def build_daily_gamelogs(date_string):
     df_pitching = pd.DataFrame()
     games = []
     filename = date_string + ".csv"
+    batting_file = Path(__file__).parent / "stats" / "batting" / filename
+    pitching_file = Path(__file__).parent / "stats" / "pitching" / filename
         
-    if not os.path.exists(os.path.dirname(__file__) + "\\data\\batting\\" + filename):
+    if not batting_file.is_file():
         print(date_string)
         # Get a list of game ids for games on this date
         games = get_games(date_string)
@@ -111,8 +96,8 @@ def build_daily_gamelogs(date_string):
         #print(df_game_pitching.head())
 
     if games:
-        df_batting.to_csv(os.path.dirname(__file__) + "\\data\\batting\\" + filename, index=False)
-        df_pitching.to_csv(os.path.dirname(__file__) + "\\data\\pitching\\" + filename, index=False)
+        df_batting.to_csv(batting_file, index=False)
+        df_pitching.to_csv(pitching_file, index=False)
 
 def get_games(date_string):
 

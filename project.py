@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
-import os
 from datetime import datetime
+from pathlib import Path
 
 
 def main():
@@ -128,11 +128,11 @@ def project(projection_date_str, settings, is_batting):
 def load_gamelogs(is_batting):
     df = pd.DataFrame()
 
-    filepath = os.path.dirname(__file__)
+    filepath = Path(__file__).parent
     if is_batting:
-        df = pd.read_csv(filepath + "\\data\\all_batting.csv")
+        df = pd.read_csv(filepath / "stats" / "batting.csv")
     else:
-        df = pd.read_csv(filepath + "\\data\\all_pitching.csv")
+        df = pd.read_csv(filepath / "stats" / "pitching.csv")
 
         df["IP"] = df["IP"].map(convert_ip)
 
@@ -147,8 +147,8 @@ def load_names():
 
     names = pd.DataFrame()
 
-    filepath = os.path.dirname(__file__)
-    names = pd.read_csv(filepath + "\\data\\people.csv", low_memory=False)
+    filepath = Path(__file__).parent
+    names = pd.read_csv(filepath / "stats" / "people.csv", low_memory=False)
 
     names = names[["key_mlbam", "name_last", "name_first"]]
     names.set_index("key_mlbam", inplace=True)
@@ -158,11 +158,12 @@ def load_names():
 
 def save_projection(date, df, is_batting):
 
-    filepath = os.path.dirname(__file__)
+    filepath = Path(__file__).parent
     if is_batting:
-        df.round().to_csv(filepath + "\\projections\\" + date + "-batting.csv")
+        filename = date + "-batting.csv"
     else:
-        df.round().to_csv(filepath + "\\projections\\" + date + "-pitching.csv")
+        filename = date + "-pitching.csv"
+    df.round().to_csv(filepath / "projections" / filename)
 
 
 
