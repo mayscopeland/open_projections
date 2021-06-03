@@ -25,7 +25,7 @@ def put_month_stats(year, month):
 
 @app.route('/stats/<int:year>/<int:month>/<int:day>', methods=['PUT'])
 def put_day_stats(year, month, day):
-    build_logs.build_yearly_gamelogs(str(year) + "-" + str(month).zfill(2) + "-" + str(day).zfill(2))
+    build_logs.build_daily_gamelogs(str(year) + "-" + str(month).zfill(2) + "-" + str(day).zfill(2))
     build_logs.combine_gamelogs()
 
 @app.route('/projections/<string:date_string>', methods=['PUT'])
