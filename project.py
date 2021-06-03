@@ -146,9 +146,7 @@ def convert_ip(ip):
 def load_names():
 
     names = pd.DataFrame()
-
-    filepath = Path(__file__).parent
-    names = pd.read_csv(filepath / "stats" / "people.csv", low_memory=False)
+    names = pd.read_csv("https://raw.githubusercontent.com/chadwickbureau/register/master/data/people.csv", low_memory=False)
 
     names = names[["key_mlbam", "name_last", "name_first"]]
     names.set_index("key_mlbam", inplace=True)
