@@ -14,17 +14,17 @@ def index():
     return "Open Projections v. 1.0"
 
 @app.route('/stats/<int:year>', methods=['PUT'])
-def put_stats(year):
+def put_year_stats(year):
     build_logs.build_yearly_gamelogs(year)
     build_logs.combine_gamelogs()
 
 @app.route('/stats/<int:year>/<int:month>', methods=['PUT'])
-def put_stats(year, month):
+def put_month_stats(year, month):
     build_logs.build_monthly_gamelogs(year, month)
     build_logs.combine_gamelogs()
 
 @app.route('/stats/<int:year>/<int:month>/<int:day>', methods=['PUT'])
-def put_stats(year, month, day):
+def put_day_stats(year, month, day):
     build_logs.build_yearly_gamelogs(year+"-"+month+"-"+day)
     build_logs.combine_gamelogs()
 
@@ -34,7 +34,7 @@ def put_projections(date_string):
     return "Projections for " + date_string + " finished"
 
 @app.route('/projections/<string:date_string>/', methods=['GET'])
-def get_projections(date_string):
+def get_day_projections(date_string):
     filepath = os.path.dirname(__file__)
     batting_file = filepath + "\\projections\\" + date_string + "-batting.csv"
     df = pd.read_csv(batting_file, index_col=None, header=0)
