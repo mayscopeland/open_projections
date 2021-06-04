@@ -156,12 +156,11 @@ def load_names():
 
 def save_projection(date, df, is_batting):
 
-    filepath = Path(__file__).parent
     if is_batting:
-        filename = date + "-batting.csv"
+        filepath = Path(__file__).parent / "projections" / "batting"
     else:
-        filename = date + "-pitching.csv"
-    df.round().to_csv(filepath / "projections" / filename)
+        filepath = Path(__file__).parent / "projections" / "pitching"
+    df.round().to_csv(filepath / (date + ".csv"))
 
 
 
