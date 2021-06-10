@@ -187,6 +187,7 @@ def load_player_projections(player_id, is_batting):
         else:
             int_cols = ["W","L","G","GS","CG","SHO","SV","HLD","IP","H","R","ER","HR","BB","IBB","SO","HBP","BK","WP","BFP"]
         player[int_cols] = player[int_cols].astype(int)
+        player.sort_values(by=['Date'], inplace=True, ascending=False)
 
     return player 
 
