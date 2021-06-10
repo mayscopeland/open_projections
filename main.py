@@ -1,6 +1,6 @@
 from flask import Flask, request
 
-import pandas
+import pandas as pd
 
 import build_logs
 import project
@@ -42,14 +42,12 @@ def get_player_projections():
     else:
         return "Error: No playerId provided. Please specify an (MLBAM) id."
 
-    batting_name, bf = project.load_player_projections(player_id, True)
+    df = pd.DataFrame()
+    df = project.load_player_projections(player_id, True)
 
     # Did we find batting projections?
-    if batting_name:
-        df = bf
-    else:
-        pitching_name, pf = project.load_player_projections(player_id, False)
-        df = pf
+    if df.empty:
+        df = project.load_player_projections(player_id, False)
 
     return df.to_json(orient="records")
 

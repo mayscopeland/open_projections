@@ -166,7 +166,6 @@ def save_projection(date, df, is_batting):
 def load_player_projections(player_id, is_batting):
 
     player = pd.DataFrame()
-    player_name = ""
 
     if is_batting:
         filedir = Path(__file__).parent / "projections" / "batting"
@@ -182,27 +181,14 @@ def load_player_projections(player_id, is_batting):
             player = player.append(df.loc[[player_id]])
     
     if not player.empty:
-        player_name = player.iloc[0]["name_first"] + " " + player.iloc[0]["name_last"]
 
         if is_batting:
             int_cols = ["PA","AB","H","2B","3B","HR","R","RBI","SB","CS","BB","SO","GIDP","HBP","SH","SF","IBB"]
-            display_cols = ["Date","AB","H","R","HR","RBI","SB","AVG","OBP","SLG","2B","3B","BB","SO","CS","GIDP","HBP","SH","SF","IBB"]
-            player["AVG"] = (player["H"] / player["AB"]).round(3)
-            player["OBP"] = ((player["H"] + player["BB"] + player["HBP"]) / (player["AB"] + player["BB"] + player["HBP"] + player["SF"])).round(3)
-            player["1B"] = player["H"] - player["2B"] - player["3B"] - player["HR"]
-            player["SLG"] = ((player["1B"] + player["2B"]*2 + player["3B"]*3 + player["HR"]*4) / player["AB"]).round(3)
         else:
             int_cols = ["W","L","G","GS","CG","SHO","SV","HLD","IP","H","R","ER","HR","BB","IBB","SO","HBP","BK","WP","BFP"]
-            display_cols = ["Date","IP","W","L","SV","SO","ERA","WHIP","R","ER","H","BB","IBB","HBP","BK","WP","G","GS","CG","SHO"]
-            player["ERA"] = (player["ER"] / player["IP"] * 9).round(2)
-            player["WHIP"] = ((player["BB"] + player["H"]) / player["IP"]).round(2)
         player[int_cols] = player[int_cols].astype(int)
 
-        player["Date"] = pd.to_datetime(player["Date"], infer_datetime_format=True)
-        player.sort_values(by=['Date'], inplace=True, ascending=False)
-        player = player[display_cols]
-
-    return player_name, player 
+    return player 
 
 
 BATTING = {
