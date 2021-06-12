@@ -170,7 +170,7 @@ def load_player_projections(player_id, is_batting):
     if is_batting:
         filedir = Path(__file__).parent / "projections" / "batting"
     else:
-        filedir = Path(__file__).parent / "projections" / "batting"
+        filedir = Path(__file__).parent / "projections" / "pitching"
 
     files = [x for x in filedir.iterdir() if x.is_file()]
     for file in files:
