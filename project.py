@@ -187,7 +187,12 @@ def load_player_projections(player_id, is_batting):
         else:
             int_cols = ["W","L","G","GS","CG","SHO","SV","HLD","IP","H","R","ER","HR","BB","IBB","SO","HBP","BK","WP","BFP"]
         player[int_cols] = player[int_cols].astype(int)
-        player.sort_values(by=['Date'], inplace=True, ascending=False)
+        player.sort_values(by=["Date"], inplace=True, ascending=False)
+
+        # Only keep the most recent projection 
+        # and 1 projection for each of the previous months.
+        player = player[(player["Date"] == player["Date"].max()) | (pd.DatetimeIndex(player["Date"]).day == 1)]
+
 
     return player 
 
