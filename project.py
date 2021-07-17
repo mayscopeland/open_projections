@@ -8,7 +8,7 @@ def main():
 
     # project(545361, "2021-04-01")
 
-    project_all("2021-05-10")
+    project_all("2021-07-17")
 
 
 def project_all(projection_date_str):
@@ -85,16 +85,8 @@ def project(projection_date_str, settings, is_batting):
             df["league_id"] == FALL, df[stat] * settings["fall_factors"][stat], df[stat]
         )
 
-
-    # Group stats by player
-    # Replace by pandas groupby?
-    player_ids = df["player_id"].unique()
-    pr = pd.DataFrame()
-    for player_id in player_ids:
-        player_games = df.loc[df["player_id"] == player_id].copy()
-        projection = player_games[settings["stat_cols"]].sum()
-        projection = projection.rename(player_id)
-        pr = pr.append(projection)
+    pr = df.groupby(["player_id"]).sum()
+    pr = pr[settings["stat_cols"]]
 
     if is_batting:
         appearances = "PA"
@@ -160,7 +152,7 @@ def save_projection(date, df, is_batting):
         filepath = Path(__file__).parent / "projections" / "batting"
     else:
         filepath = Path(__file__).parent / "projections" / "pitching"
-    df.round().to_csv(filepath / (date + ".csv"))
+    df.round().to_csv(filepath / (date + ".csv"), index_label="player_id")
 
 def load_projection(date, is_batting):
 
@@ -169,7 +161,7 @@ def load_projection(date, is_batting):
     else:
         filepath = Path(__file__).parent / "projections" / "pitching"
     
-    return pd.read_csv(filepath / (date + ".csv"), index_col=[0])
+    return pd.read_csv(filepath / (date + ".csv"))
 
 
 def load_player_projections(player_id, is_batting):
