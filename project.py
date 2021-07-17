@@ -162,6 +162,15 @@ def save_projection(date, df, is_batting):
         filepath = Path(__file__).parent / "projections" / "pitching"
     df.round().to_csv(filepath / (date + ".csv"))
 
+def load_projection(date, is_batting):
+
+    if is_batting:
+        filepath = Path(__file__).parent / "projections" / "batting"
+    else:
+        filepath = Path(__file__).parent / "projections" / "pitching"
+    
+    return pd.read_csv(filepath / (date + ".csv"))
+
 
 def load_player_projections(player_id, is_batting):
 
@@ -195,6 +204,10 @@ def load_player_projections(player_id, is_batting):
 
 
     return player 
+
+def search_players(search_string):
+
+    return True
 
 
 BATTING = {

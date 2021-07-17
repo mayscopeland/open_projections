@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 
 import pandas as pd
 
@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Open Projections v. 1.0"
+    return render_template("index.html")
 
 @app.route('/stats/<int:year>', methods=['PUT'])
 def put_year_stats(year):
@@ -34,6 +34,18 @@ def put_day_stats(year, month, day):
 def put_projections(date_string):
     project.project_all(date_string)
     return "Projections for " + date_string + " finished"
+
+@app.route('/projections/<string:date_string>', methods=['GET'])
+def get_projections(date_string):
+    if (request.args.get("type") == "batting"):
+        is_batting = True
+    elif (request.args.get("type") == "pitching"):
+        is_batting = False
+    else:
+        return "Error: type must be batting or pitching."
+
+    df = project.load_projection(date_string, is_batting)
+    return df.to_json(orient="records")
 
 @app.route('/projections/', methods=['GET'])
 def get_player_projections():

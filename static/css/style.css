@@ -1,0 +1,63 @@
+body {
+  font-family: 'PT Serif', serif;
+}
+
+.navbar-brand {
+  font-family: 'Playball', 'Brush Script MT', cursive;
+  font-size: 26px;
+}
+
+.navbar-brand img {
+  margin-right: 5px;
+}
+
+/* Footer */
+.has-text-light a {
+	color: whitesmoke;
+}
+
+/* Main page */
+.hero.is-light .title {
+  color: rgba(0, 0, 0, 0.9);
+  text-shadow: 1px 1px 4px #b5b5b5;
+}
+
+@media screen and (min-width: 1024px) {
+  .hero.is-light .title {
+    font-size: 6rem;
+    text-shadow: 2px 2px 4px #b5b5b5;
+  }
+}
+
+.hero h1 {
+  font-family: 'Playball', 'Brush Script MT', cursive;
+}
+
+/* Versions page */
+
+/* Add spacing between cards for Versions */
+.card {
+  margin-bottom: 48px;
+}
+
+/* Projections page */
+
+/* Table sort icons */
+table.js-sort-table thead tr > th:not(.js-sort-none) {
+    cursor:pointer;
+	padding-left: 3px;
+}
+
+table.js-sort-table thead tr > th:not(.js-sort-none)::after{
+  content:url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIUnC2nKLnT4or00PvyrQwrPzUZshQAOw==);
+}
+table.js-sort-asc thead tr > .js-sort-active:not(.js-sort-none)::after{
+  content:url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIRnC2nKLnT4or00Puy3rx7VQAAOw==);
+}
+table.js-sort-desc thead tr > .js-sort-active:not(.js-sort-none)::after{
+  content:url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIPnI+py+0/hJzz0IruwjsVADs=);
+}
+
+th, td {
+  white-space:nowrap;
+}
