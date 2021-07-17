@@ -169,7 +169,7 @@ def load_projection(date, is_batting):
     else:
         filepath = Path(__file__).parent / "projections" / "pitching"
     
-    return pd.read_csv(filepath / (date + ".csv"))
+    return pd.read_csv(filepath / (date + ".csv"), index_col=[0])
 
 
 def load_player_projections(player_id, is_batting):
