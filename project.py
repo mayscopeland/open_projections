@@ -21,6 +21,10 @@ def project(projection_date_str, settings, is_batting):
     MAX_DAYS_AGO = 2000
     LG_AVG_PCT = 0.15
     PROJECTED_PA = 650
+    MIN_RP_PA = 120
+
+    # Compared to the max appearances, what percentage does a player need to get a projection?
+    APPEARANCE_THRESHOLD = 0.10
 
     # MLB's "GameTypes"
     SPRING_TRAINING = "S"
@@ -91,15 +95,18 @@ def project(projection_date_str, settings, is_batting):
     if is_batting:
         appearances = "PA"
         pr[appearances] = pr["AB"] + pr["BB"] + pr["HBP"] + pr["SH"] + pr["SF"]
+        pr["projected_pa"] = PROJECTED_PA
     else:
         appearances = "BFP"
+        pr["start_pct"] = pr["GS"] / pr["G"]
+        pr["projected_pa"] = MIN_RP_PA + pr["start_pct"] * (PROJECTED_PA - MIN_RP_PA)
 
     # Our regression to the mean will be 15% of the top player's PA
     max_pa = pr[appearances].max()
     regression_pa = LG_AVG_PCT * max_pa
 
     # Clear out players with too few appearances (long-retired, pitchers batting, etc.)
-    pr = pr[pr[appearances] > (max_pa * 0.1)]
+    pr = pr[pr[appearances] > (max_pa * APPEARANCE_THRESHOLD)]
 
     # This should only be league average of MLB players
     lg_avg = pr.mean()
@@ -109,7 +116,12 @@ def project(projection_date_str, settings, is_batting):
     pr = pr + lg_avg
 
     # Scale everyone to the same PA
-    pr = pr.multiply(PROJECTED_PA / pr[appearances], axis="index")
+    pr = pr.multiply(pr["projected_pa"] / pr[appearances], axis="index")
+
+    # Clean up calc columns
+    pr = pr.drop("projected_pa", 1)
+    if not is_batting:
+        pr = pr.drop("start_pct", 1)
 
     # Add names to the data for easy readability
     pr = pr.join(load_names(), how="left")
