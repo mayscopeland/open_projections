@@ -21,7 +21,8 @@ def project(projection_date_str, settings, is_batting):
     MAX_DAYS_AGO = 2000
     LG_AVG_PCT = 0.15
     PROJECTED_PA = 650
-    MIN_RP_PA = 120
+    PROJECTED_BF = 800
+    MIN_RP_BF = 250
 
     # Compared to the max appearances, what percentage does a player need to get a projection?
     APPEARANCE_THRESHOLD = 0.10
@@ -95,11 +96,9 @@ def project(projection_date_str, settings, is_batting):
     if is_batting:
         appearances = "PA"
         pr[appearances] = pr["AB"] + pr["BB"] + pr["HBP"] + pr["SH"] + pr["SF"]
-        pr["projected_pa"] = PROJECTED_PA
     else:
         appearances = "BFP"
         pr["start_pct"] = pr["GS"] / pr["G"]
-        pr["projected_pa"] = MIN_RP_PA + pr["start_pct"] * (PROJECTED_PA - MIN_RP_PA)
 
     # Our regression to the mean will be 15% of the top player's PA
     max_pa = pr[appearances].max()
@@ -113,9 +112,15 @@ def project(projection_date_str, settings, is_batting):
     factor = regression_pa / lg_avg[appearances]
     lg_avg = lg_avg * factor
 
+    lg_avg["start_pct"] = 0
     pr = pr + lg_avg
 
     # Scale everyone to the same PA
+    if is_batting:
+        pr["projected_pa"] = PROJECTED_PA
+    else:
+        pr["projected_pa"] = MIN_RP_BF + pr["start_pct"] * (PROJECTED_BF - MIN_RP_BF)
+
     pr = pr.multiply(pr["projected_pa"] / pr[appearances], axis="index")
 
     # Clean up calc columns
