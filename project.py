@@ -125,8 +125,7 @@ def project(projection_date_str, settings, is_batting):
 
     # Clean up calc columns
     pr = pr.drop("projected_pa", 1)
-    if not is_batting:
-        pr = pr.drop("start_pct", 1)
+    pr = pr.drop("start_pct", 1)
 
     # Add names to the data for easy readability
     pr = pr.join(load_names(), how="left")
