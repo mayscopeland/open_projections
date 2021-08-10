@@ -10,8 +10,8 @@
 	<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
 	<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon-16x16.png') }}">
 	<link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/bulma.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
     <title>Open Projections</title>
     
@@ -36,7 +36,7 @@
     </nav>
 
     <!-- HERO -->
-    <section class="hero is-light is-medium">
+    <section class="hero is-light is-small">
       <div class="hero-body has-text-centered">
         <div class="container">
           <h1 class="title is-spaced is-1 has-text-black">
@@ -45,50 +45,460 @@
           <h2 class="subtitle">
             A completely transparent methodology for forecasting baseball performance.
           </h2>
+
+
+          <div class="columns is-centered">
+            <div class="column is-4 has-text-centered">
+    
+              <a href="https://github.com/mayscopeland/open_projections">
+              <div class="card">
+                <div class="card-content">
+                  <div class="content">
+                    <figure class="image is-128x128 is-inline-block">
+                      <img src="{{ url_for('static', filename='img/github.png') }}" alt="GitHub">
+                    </figure>
+                    <p class="subtitle is-4">View source on GitHub</p>
+                  </div>
+                </div>
+              </div>
+              </a>
+    
+            </div>
+            <div class="column is-4 has-text-centered">
+    
+              <a href="https://projectile.pro">
+              <div class="card">
+                <div class="card-content">
+                  <div class="content">
+                    <figure class="image is-128x128 is-inline-block">
+                      <img src="{{ url_for('static', filename='img/projectile.svg') }}" alt="Projectile">
+                    </figure>
+                    <p class="subtitle is-4">View projections on Projectile</p>
+                  </div>
+                </div>
+              </div>
+              </a>
+    
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
- 
- 
-	<!-- CARDS -->
+
+	<!-- VERSIONS -->
 	<section class="section">
 		<div class="container">
-			<div class="columns is-centered">
-				<div class="column is-4 has-text-centered">
+      <div class="columns">
+        <div class="column is-8 is-offset-2">
 
-					<a href="https://github.com/mayscopeland/open_projections">
-					<div class="card">
-						<div class="card-content">
-							<div class="content">
-								<figure class="image is-128x128 is-inline-block">
-									<img src="{{ url_for('static', filename='img/github.png') }}" alt="GitHub">
-								</figure>
-								<p class="title is-4">View source on GitHub</p>
-							</div>
-						</div>
-					</div>
-					</a>
+          <div class="card">
+            <div class="card-content">
+              <div class="content">
+    
+              <h1 class="title is-1">Current Version: 1.1 (Aparicio)</h1>
+                <p>
+                  The inaugural version 1 of the Open Projections&mdash;named <strong>Aparicio</strong>&mdash;starts with daily game logs for the past 2000 days (roughly the past six years). By working with daily stats, we are able to build projections for any point in time. A player's projection will gradually shift everyday as the new day's stats are collected and old stats fall out of the projection.
+                </p>
+                <p>
+                  Aparicio includes game data for every level of professional baseball, from Rookie leagues to MLB. It even includes spring training and postseason. We're going to throw everything in the mix and try to filter out the most valuable data.
+                </p>
+  
+                <h2 class="title is-3">Weighting by recency</h2>
+                <h3 class="subtitle is-5">0.9994^daysAgo for batting, 0.999^daysAgo for pitching</h3>
+                <p>
+                  Stats for each game are weighted by recency, so that more recent games are more influential in the projection. Batting stats are weighted at 0.9994^daysAgo. This means that yesterday's games receive almost full weighting (99.4%), while a game from three years ago counts for about half as much (0.9994^1095 = 51.8%).
+                </p>
+                <p>
+                  Pitching stats are weighted at 0.999^daysAgo. Weighting for both batting and pitching are ideas taken from Tom Tango and are comparable to the yearly weights used by Marcel. (See the discussion of <a href="http://www.insidethebook.com/ee/index.php/site/article/new_pecota">New PECOTA</a>.)
+                </p>
+  
+                <h2 class="title is-3">Weighting by level</h2>
+                <h3 class="subtitle is-5">45% for Spring, DT-based stat weights for minors</h3>
+                <p>
+                  Spring Training and exhibition games receive a weighting of 45%, a number which comes from Neil Paine's study of spring training stats. (See Neil's <a href="https://fivethirtyeight.com/features/when-spring-training-matters/">When Spring Training Matters</a> and the <a href="http://tangotiger.com/index.php/site/article/how-much-to-weight-spring-training-performances">follow-up discussion</a> by Tom Tango.) Notice this considers the most recent Spring Training as roughly equivalent to MLB performances from three years ago.
+                </p>
+                <p>
+                  No adjustment is made to postseason stats, which are counted the same as the regular season.
+                </p>
+                <p>
+                  For minor league stats, each component receives a separate weight for each level of minor league ball. For this, I did a rough reverse engineering of <a href="http://claydavenport.com/">Clay Davenport's Davenport Translations</a> for 2019. (Note: A more advanced approach would adjust for various minor league park factors and year-by-year changes in league quality. But this is enough to get us started.)
+                </p>
 
-				</div>
-				<div class="column is-4 has-text-centered">
+                <h3 class="title is-5">Minor League Factors (Batting)</h3>
+                <div class="table-container">
+                  <table class="table is-narrow is-hoverable">
+                    <thead>
+                      <tr>
+                        <th>Level</th>
+                        <th>AB</th>
+                        <th>R</th>
+                        <th>H</th>
+                        <th>2B</th>
+                        <th>3B</th>
+                        <th>HR</th>
+                        <th>RBI</th>
+                        <th>SB</th>
+                        <th>CS</th>
+                        <th>BB</th>
+                        <th>SO</th>
+                        <th>IBB</th>
+                        <th>HBP</th>
+                        <th>SH</th>
+                        <th>SF</th>
+                        <th>GIDP</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th>AAA</th>
+                        <td>1.01</td>
+                        <td>0.86</td>
+                        <td>0.91</td>
+                        <td>0.90</td>
+                        <td>0.76</td>
+                        <td>0.86</td>
+                        <td>0.85</td>
+                        <td>0.85</td>
+                        <td>1.00</td>
+                        <td>0.89</td>
+                        <td>0.94</td>
+                        <td>0.89</td>
+                        <td>0.89</td>
+                        <td>0.89</td>
+                        <td>0.89</td>
+                        <td>0.89</td>
+                      </tr>
+                      <tr>
+                        <th>AA</th>                      
+                        <td>1.01</td>
+                        <td>0.89</td>
+                        <td>0.90</td>
+                        <td>0.95</td>
+                        <td>0.95</td>
+                        <td>0.82</td>
+                        <td>0.86</td>
+                        <td>0.84</td>
+                        <td>0.97</td>
+                        <td>0.89</td>
+                        <td>0.99</td>
+                        <td>0.89</td>
+                        <td>0.89</td>
+                        <td>0.89</td>
+                        <td>0.89</td>
+                        <td>0.89</td>
+                      </tr>
+                      <tr>
+                        <th>High-A</th>
+                        <td>1.02</td>
+                        <td>0.90</td>
+                        <td>0.89</td>
+                        <td>0.97</td>
+                        <td>0.82</td>
+                        <td>1.03</td>
+                        <td>0.88</td>
+                        <td>0.85</td>
+                        <td>0.89</td>
+                        <td>0.86</td>
+                        <td>1.02</td>
+                        <td>0.86</td>
+                        <td>0.86</td>
+                        <td>0.86</td>
+                        <td>0.86</td>
+                        <td>0.86</td>
+                      </tr>
+                      <tr>
+                        <th>Low-A</th>
+                        <td>1.04</td>
+                        <td>0.81</td>
+                        <td>0.83</td>
+                        <td>0.85</td>
+                        <td>0.79</td>
+                        <td>1.03</td>
+                        <td>0.78</td>
+                        <td>0.71</td>
+                        <td>0.92</td>
+                        <td>0.74</td>
+                        <td>1.13</td>
+                        <td>0.74</td>
+                        <td>0.74</td>
+                        <td>0.74</td>
+                        <td>0.74</td>
+                        <td>0.74</td>
+                      </tr>
+                      <tr>
+                        <th>Rookie</th>
+                        <td>1.06</td>
+                        <td>0.60</td>
+                        <td>0.73</td>
+                        <td>0.82</td>
+                        <td>0.59</td>
+                        <td>0.55</td>
+                        <td>0.59</td>
+                        <td>0.61</td>
+                        <td>0.82</td>
+                        <td>0.62</td>
+                        <td>1.21</td>
+                        <td>0.62</td>
+                        <td>0.62</td>
+                        <td>0.62</td>
+                        <td>0.62</td>
+                        <td>0.62</td>
+                      </tr>
+                      <tr>
+                        <th>Fall</th>
+                        <td>1.04</td>
+                        <td>0.85</td>
+                        <td>0.95</td>
+                        <td>1.09</td>
+                        <td>0.77</td>
+                        <td>1.06</td>
+                        <td>0.78</td>
+                        <td>0.74</td>
+                        <td>1.00</td>
+                        <td>0.66</td>
+                        <td>0.93</td>
+                        <td>0.66</td>
+                        <td>0.66</td>
+                        <td>0.66</td>
+                        <td>0.66</td>
+                        <td>0.66</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <h3 class="title is-5">Minor League Factors (Pitching)</h3>
+                <div class="table-container">
+                  <table class="table is-narrow is-hoverable">
+                    <thead>
+                      <tr>
+                        <th>Level</th>
+                        <th>W</th>
+                        <th>L</th>
+                        <th>G</th>
+                        <th>GS</th>
+                        <th>CG</th>
+                        <th>SHO</th>
+                        <th>SV</th>
+                        <th>HLD</th>
+                        <th>BFP</th>
+                        <th>IP</th>
+                        <th>H</th>
+                        <th>ER</th>
+                        <th>R</th>
+                        <th>HR</th>
+                        <th>SO</th>
+                        <th>BB</th>
+                        <th>IBB</th>
+                        <th>HBP</th>
+                        <th>WP</th>
+                        <th>BK</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th>AAA</th>
+                        <td>0.99</td>
+                        <td>1.44</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>0.89</td>
+                        <td>0.89</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>1.11</td>
+                        <td>1.15</td>
+                        <td>1.15</td>
+                        <td>1.37</td>
+                        <td>0.59</td>
+                        <td>1.03</td>
+                        <td>1.03</td>
+                        <td>1.03</td>
+                        <td>1.03</td>
+                        <td>1.03</td>
+                      </tr>
+                      <tr>
+                        <th>AA</th>
+                        <td>0.89</td>
+                        <td>1.32</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>0.94</td>
+                        <td>0.94</td>
+                        <td>0.98</td>
+                        <td>0.98</td>
+                        <td>1.14</td>
+                        <td>1.26</td>
+                        <td>1.26</td>
+                        <td>1.48</td>
+                        <td>0.58</td>
+                        <td>1.08</td>
+                        <td>1.08</td>
+                        <td>1.08</td>
+                        <td>1.08</td>
+                        <td>1.08</td>
+                      </tr>
+                      <tr>
+                        <th>High-A</th>
+                        <td>0.89</td>
+                        <td>1.44</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>0.92</td>
+                        <td>0.92</td>
+                        <td>0.97</td>
+                        <td>0.97</td>
+                        <td>1.19</td>
+                        <td>1.37</td>
+                        <td>1.37</td>
+                        <td>2.20</td>
+                        <td>0.56</td>
+                        <td>1.11</td>
+                        <td>1.11</td>
+                        <td>1.11</td>
+                        <td>1.11</td>
+                        <td>1.11</td>
+                      </tr>
+                      <tr>
+                        <th>Low-A</th>
+                        <td>0.75</td>
+                        <td>1.26</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>0.91</td>
+                        <td>0.91</td>
+                        <td>0.94</td>
+                        <td>0.94</td>
+                        <td>1.30</td>
+                        <td>1.59</td>
+                        <td>1.59</td>
+                        <td>3.13</td>
+                        <td>0.44</td>
+                        <td>1.11</td>
+                        <td>1.11</td>
+                        <td>1.11</td>
+                        <td>1.11</td>
+                        <td>1.11</td>
+                      </tr>
+                      <tr>
+                        <th>Rookie</th>
+                        <td>0.74</td>
+                        <td>1.34</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>0.94</td>
+                        <td>0.94</td>
+                        <td>0.99</td>
+                        <td>0.99</td>
+                        <td>1.26</td>
+                        <td>1.33</td>
+                        <td>1.33</td>
+                        <td>1.98</td>
+                        <td>0.45</td>
+                        <td>0.98</td>
+                        <td>0.98</td>
+                        <td>0.98</td>
+                        <td>0.98</td>
+                        <td>0.98</td>
+                      </tr>
+                      <tr>
+                        <th>Fall</th>
+                        <td>0.61</td>
+                        <td>0.87</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>0.00</td>
+                        <td>0.00</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>1.25</td>
+                        <td>1.25</td>
+                        <td>1.25</td>
+                        <td>2.03</td>
+                        <td>0.55</td>
+                        <td>0.81</td>
+                        <td>0.81</td>
+                        <td>0.81</td>
+                        <td>0.81</td>
+                        <td>0.81</td>
+                      </tr>
+                    </tbody>
+    
+                  </table>
+                </div>
+  
+                <h2 class="title is-3">Regression to the mean</h2>
+                <h3 class="subtitle is-5">Add average player stats as 15% of the max PA/BF, after removing players with less than 10% of the max PA/BF</h3>
+                <p>
+                  After each player's stats have been weighted, we roll them up into a single statline. Now it's time to regress.
+                </p>
+                <p>
+                  Our regression component will amount to 15% of the PA (or, for pitchers, BF) for the player with the most PA/BF in the sample. For comparison, <a href="http://www.tangotiger.net/archives/stud0346.shtml">Marcel</a> uses 1200 PA for its regression. A fixed number of PA, however, doesn't deal well with longer and shorter season lengths (e.g. the shortened season of 2020), so we want to instead use a percentage of PA. With Marcel, a top-of-the-lineup hitter might get 700 PA over the three years Marcel considers. That player would have 8400 PA after Marcel's weighting, and 1200 PA of regression would be about 14% of the total. That's what we are trying to match with our 15% regression.
+                </p>
+                <p>
+                  The regression will be based on the average stats from our universe of players. Before we find the average, though, we discard any players who accumulated less than 10% of the largest number of PA/BF in our set. This clears out pitchers who are hitting, hitters who are pitching, etc. (Question: Should we try to find the average from only MLB stats (i.e. true league average), rather than the average from our universe of players at every level?)
+                </p>
+                <p>
+                  The statline for this average player is added to each player's projected stats.
+                </p>
+  
+                <h2 class="title is-3">Playing time</h2>
+                <h3 class="subtitle is-5">650 PA for hitters, 800 BF for SP, 250 BF for RP</h3>
+                <p>
+                  For now, playing time projections are kept simple. Every batter's stats are adjusted to exactly 650 PA. Version 1.0 also adjusted every pitcher to 650 BF, but this created obviously unrealistic projections for RP. Version 1.1 tweaks pitcher playing time by setting RP at 250 BF and SP at 800 BF. Pitchers in a mixed role fall in between those two numbers. For example, a pitcher who starts half of his games would be projected halfway between 250 and 800 at 525 BF.
+                </p>
 
-					<a href="https://projectile.pro">
-					<div class="card">
-						<div class="card-content">
-							<div class="content">
-								<figure class="image is-128x128 is-inline-block">
-									<img src="{{ url_for('static', filename='img/projectile.svg') }}" alt="Projectile">
-								</figure>
-								<p class="title is-4">View projections on Projectile</p>
-							</div>
-						</div>
-					</div>
-					</a>
+                <h2 class="title is-3">That's it!</h2>
+                <p>We're finished! Our Aparicio projections are completed. Hopefully you can see the many ways that this can still be improved, but it gives us a good starting point.</p>
+              </div>
+            </div>
+          </div>
 
-				</div>
-			</div>
-		</div>
-	</section>
+        </div>
+      </div>
+      
+      <div class="columns">
+        <div class="column is-8 is-offset-2">
+          <div class="card">
+            <div class="card-content">
+              <div class="content">
+                    
+                <h1 class="title is-1">Up Next: Version 2 (Blyleven)</h1>
+                <p>
+                  The focus of the second iteration of the Open Projections&mdash;called <strong>Blyleven</strong>&mdash;will be separate weightings and regressions for each component stat in the projection.
+                </p>
+                <p>
+                  We know that some stats (strikeouts, for example) can be projected based on relatively small, recent sample. Other stats (like hits) require a bigger sample and more regression.
+                </p>
+                <p>
+                  This is not a new idea. I'm guessing that this is typical of most closed projection systems. For example:
+                </p>
+                  <ul>
+                    <li>Sean Smith (CHONE projections) was <a href="http://lanaheimangelfan.blogspot.com/2009/06/david-wright.html">thinking about this back in 2009.</a></li>
+                    <li>Jared Cross mentioned how they <a href="https://web.archive.org/web/20101226021929/http://steamerprojections.com/blog/evaluation-of-2009-hitter-forecasts/">"have different weights for each component and regress some components more heavily than others"</a> in the 2009 Steamer projections.</li>
+                    <li>Clay Davenport wrote about <a href="http://claydavenport.com/archives/123">incorporating this idea in his projections back in 2012.</a></li>
+                  </ul>
+                <p>So, not new, but I'd still guess it's the next best upgrade for the Open Projections.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
 
     <!-- FOOTER -->
     <footer class="footer has-background-dark has-text-light">

@@ -7,6 +7,10 @@ body {
   font-size: 26px;
 }
 
+.navbar-brand a {
+  text-decoration: none;
+}
+
 .navbar-brand img {
   margin-right: 5px;
 }
@@ -33,11 +37,8 @@ body {
   font-family: 'Playball', 'Brush Script MT', cursive;
 }
 
-/* Versions page */
-
-/* Add spacing between cards for Versions */
-.card {
-  margin-bottom: 48px;
+.hero a {
+  text-decoration: none;
 }
 
 /* Projections page */
