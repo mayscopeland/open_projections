@@ -3,7 +3,7 @@ from flask import Flask, request, render_template
 import pandas as pd
 
 import build_logs
-import aparicio
+import blyleven as project
 
 app = Flask(__name__)
 
@@ -32,7 +32,7 @@ def put_day_stats(year, month, day):
 
 @app.route('/projections/<string:date_string>', methods=['PUT'])
 def put_projections(date_string):
-    aparicio.project_all(date_string)
+    project.project_all(date_string)
     return "Projections for " + date_string + " finished"
 
 @app.route('/projections/<string:date_string>', methods=['GET'])
@@ -44,7 +44,7 @@ def get_projections(date_string):
     else:
         return "Error: type must be batting or pitching."
 
-    df = aparicio.load_projection(date_string, is_batting)
+    df = project.load_projection(date_string, is_batting)
     return df.to_json(orient="records")
 
 @app.route('/projections/', methods=['GET'])
@@ -55,11 +55,11 @@ def get_player_projections():
         return "Error: No playerId provided. Please specify an (MLBAM) id."
 
     df = pd.DataFrame()
-    df = aparicio.load_player_projections(player_id, True)
+    df = project.load_player_projections(player_id, True)
 
     # Did we find batting projections?
     if df.empty:
-        df = aparicio.load_player_projections(player_id, False)
+        df = project.load_player_projections(player_id, False)
 
     return df.to_json(orient="records")
 
