@@ -93,10 +93,17 @@
       <div class="columns">
         <div class="column is-8 is-offset-2">
           <div class="card">
+            <header class="card-header">
+              <div class="card-content title is-1">Current Version: 2.1 (Blyleven)</h1>
+            </header>
             <div class="card-content">
               <div class="content">
-                    
-                <h1 class="title is-1">Current Version: 2.0 (Blyleven)</h1>
+                <h2 class="title is-3">Changelog</h2>
+                <ul>
+                  <li>2.1 (2021-08-19): Update minor league factors. (Previous factors were too high for HR, especially.)</li>
+                  <li>2.0 (2021-08-18): Initial release of Blyleven with separate weighting and regression for each stat!</li>
+                </ul>
+                <h2 class="title is-3">Basics</h2>
                 <p>
                   The focus of the second iteration of the Open Projections&mdash;called <strong>Blyleven</strong>&mdash;is separate weightings and regressions for each component stat in the projection.
                 </p>
@@ -121,10 +128,18 @@
       <div class="columns">
         <div class="column is-8 is-offset-2">
           <div class="card">
+            <header class="card-header">
+              <div class="card-content title is-1">Version 1 (Aparicio)</h1>
+            </header>
             <div class="card-content">
               <div class="content">
-    
-              <h1 class="title is-1">Version 1 (Aparicio)</h1>
+                <h2 class="title is-3">Changelog</h2>
+                <ul>
+                  <li>1.2 (2021-08-19): Update minor league factors. (Previous factors were too high for HR, especially.)</li>
+                  <li>1.1 (2021-08-07): Project RP at 250 BF and SP at 800 BF. (Previously both projected to 650 BF.)</li>
+                  <li>1.0 (2021-03-31): Aparicio initial release!</li>
+                </ul>
+                <h2 class="title is-3">Basics</h2>
                 <p>
                   The inaugural version 1 of the Open Projections&mdash;named <strong>Aparicio</strong>&mdash;starts with daily game logs for the past 2000 days (roughly the past six years). By working with daily stats, we are able to build projections for any point in time. A player's projection will gradually shift everyday as the new day's stats are collected and old stats fall out of the projection.
                 </p>
@@ -133,7 +148,7 @@
                 </p>
   
                 <h2 class="title is-3">Weighting by recency</h2>
-                <h3 class="subtitle is-5">0.9994^daysAgo for batting, 0.999^daysAgo for pitching</h3>
+                <h3 class="subtitle is-5 is-italic">(0.9994^daysAgo for batting, 0.999^daysAgo for pitching)</h3>
                 <p>
                   Stats for each game are weighted by recency, so that more recent games are more influential in the projection. Batting stats are weighted at 0.9994^daysAgo. This means that yesterday's games receive almost full weighting (99.4%), while a game from three years ago counts for about half as much (0.9994^1095 = 51.8%).
                 </p>
@@ -142,7 +157,7 @@
                 </p>
   
                 <h2 class="title is-3">Weighting by level</h2>
-                <h3 class="subtitle is-5">45% for Spring, DT-based stat weights for minors</h3>
+                <h3 class="subtitle is-5 is-italic">(45% for Spring, DT-based stat weights for minors)</h3>
                 <p>
                   Spring Training and exhibition games receive a weighting of 45%, a number which comes from Neil Paine's study of spring training stats. (See Neil's <a href="https://fivethirtyeight.com/features/when-spring-training-matters/">When Spring Training Matters</a> and the <a href="http://tangotiger.com/index.php/site/article/how-much-to-weight-spring-training-performances">follow-up discussion</a> by Tom Tango.) Notice this considers the most recent Spring Training as roughly equivalent to MLB performances from three years ago.
                 </p>
@@ -150,7 +165,10 @@
                   No adjustment is made to postseason stats, which are counted the same as the regular season.
                 </p>
                 <p>
-                  For minor league stats, each component receives a separate weight for each level of minor league ball. For this, I did a rough reverse engineering of <a href="http://claydavenport.com/">Clay Davenport's Davenport Translations</a> for 2019. (Note: A more advanced approach would adjust for various minor league park factors and year-by-year changes in league quality. But this is enough to get us started.)
+                  For minor league stats, each component receives a separate weight for each level of minor league ball. For this, I did a rough reverse engineering of <a href="http://claydavenport.com/">Clay Davenport's Davenport Translations</a> for 2019. For stats not available in DTs, I approximated with a similar stat (e.g. SV for HLD, BB for HBP). With Version 1.2, I re-ran the Davenport Translation numbers from 2021 and updated the minor league factors.
+                </p>
+                <p>
+                  A more advanced approach would adjust for various minor league park factors and year-by-year changes in league quality. But this is enough to get us started.
                 </p>
 
                 <h3 class="title is-5">Minor League Factors (Batting)</h3>
@@ -180,117 +198,98 @@
                     <tbody>
                       <tr>
                         <th>AAA</th>
-                        <td>1.01</td>
-                        <td>0.86</td>
-                        <td>0.91</td>
-                        <td>0.90</td>
-                        <td>0.76</td>
-                        <td>0.86</td>
-                        <td>0.85</td>
-                        <td>0.85</td>
                         <td>1.00</td>
-                        <td>0.89</td>
-                        <td>0.94</td>
-                        <td>0.89</td>
-                        <td>0.89</td>
-                        <td>0.89</td>
-                        <td>0.89</td>
-                        <td>0.89</td>
+                        <td>0.79</td>
+                        <td>0.95</td>
+                        <td>0.80</td>
+                        <td>0.84</td>
+                        <td>0.66</td>
+                        <td>0.79</td>
+                        <td>0.72</td>
+                        <td>1.01</td>
+                        <td>0.78</td>
+                        <td>0.90</td>
+                        <td>0.78</td>
+                        <td>0.78</td>
+                        <td>0.78</td>
+                        <td>0.78</td>
+                        <td>0.78</td>
                       </tr>
                       <tr>
-                        <th>AA</th>                      
-                        <td>1.01</td>
-                        <td>0.89</td>
-                        <td>0.90</td>
-                        <td>0.95</td>
-                        <td>0.95</td>
+                        <th>AA/Fall</th>                      
+                        <td>1.02</td>
                         <td>0.82</td>
-                        <td>0.86</td>
-                        <td>0.84</td>
-                        <td>0.97</td>
-                        <td>0.89</td>
                         <td>0.99</td>
-                        <td>0.89</td>
-                        <td>0.89</td>
-                        <td>0.89</td>
-                        <td>0.89</td>
-                        <td>0.89</td>
+                        <td>0.85</td>
+                        <td>0.95</td>
+                        <td>0.67</td>
+                        <td>0.83</td>
+                        <td>0.70</td>
+                        <td>0.91</td>
+                        <td>0.79</td>
+                        <td>0.90</td>
+                        <td>0.79</td>
+                        <td>0.79</td>
+                        <td>0.79</td>
+                        <td>0.79</td>
+                        <td>0.79</td>
                       </tr>
                       <tr>
                         <th>High-A</th>
-                        <td>1.02</td>
-                        <td>0.90</td>
-                        <td>0.89</td>
-                        <td>0.97</td>
-                        <td>0.82</td>
                         <td>1.03</td>
-                        <td>0.88</td>
-                        <td>0.85</td>
-                        <td>0.89</td>
-                        <td>0.86</td>
-                        <td>1.02</td>
-                        <td>0.86</td>
-                        <td>0.86</td>
-                        <td>0.86</td>
-                        <td>0.86</td>
-                        <td>0.86</td>
+                        <td>0.78</td>
+                        <td>0.95</td>
+                        <td>0.79</td>
+                        <td>0.81</td>
+                        <td>0.61</td>
+                        <td>0.75</td>
+                        <td>0.51</td>
+                        <td>0.93</td>
+                        <td>0.72</td>
+                        <td>0.93</td>
+                        <td>0.72</td>
+                        <td>0.72</td>
+                        <td>0.72</td>
+                        <td>0.72</td>
+                        <td>0.72</td>
                       </tr>
                       <tr>
                         <th>Low-A</th>
-                        <td>1.04</td>
-                        <td>0.81</td>
-                        <td>0.83</td>
-                        <td>0.85</td>
-                        <td>0.79</td>
-                        <td>1.03</td>
-                        <td>0.78</td>
-                        <td>0.71</td>
+                        <td>1.05</td>
+                        <td>0.69</td>
                         <td>0.92</td>
-                        <td>0.74</td>
-                        <td>1.13</td>
-                        <td>0.74</td>
-                        <td>0.74</td>
-                        <td>0.74</td>
-                        <td>0.74</td>
-                        <td>0.74</td>
+                        <td>0.76</td>
+                        <td>0.69</td>
+                        <td>0.65</td>
+                        <td>0.68</td>
+                        <td>0.46</td>
+                        <td>0.84</td>
+                        <td>0.64</td>
+                        <td>0.89</td>
+                        <td>0.64</td>
+                        <td>0.64</td>
+                        <td>0.64</td>
+                        <td>0.64</td>
+                        <td>0.64</td>
                       </tr>
                       <tr>
                         <th>Rookie</th>
-                        <td>1.06</td>
-                        <td>0.60</td>
-                        <td>0.73</td>
-                        <td>0.82</td>
-                        <td>0.59</td>
-                        <td>0.55</td>
-                        <td>0.59</td>
-                        <td>0.61</td>
-                        <td>0.82</td>
-                        <td>0.62</td>
-                        <td>1.21</td>
-                        <td>0.62</td>
-                        <td>0.62</td>
-                        <td>0.62</td>
-                        <td>0.62</td>
-                        <td>0.62</td>
-                      </tr>
-                      <tr>
-                        <th>Fall</th>
-                        <td>1.04</td>
-                        <td>0.85</td>
-                        <td>0.95</td>
-                        <td>1.09</td>
+                        <td>1.08</td>
+                        <td>0.51</td>
                         <td>0.77</td>
+                        <td>0.63</td>
+                        <td>0.26</td>
+                        <td>0.39</td>
+                        <td>0.48</td>
+                        <td>0.27</td>
+                        <td>0.48</td>
+                        <td>0.54</td>
                         <td>1.06</td>
-                        <td>0.78</td>
-                        <td>0.74</td>
-                        <td>1.00</td>
-                        <td>0.66</td>
-                        <td>0.93</td>
-                        <td>0.66</td>
-                        <td>0.66</td>
-                        <td>0.66</td>
-                        <td>0.66</td>
-                        <td>0.66</td>
+                        <td>0.54</td>
+                        <td>0.54</td>
+                        <td>0.54</td>
+                        <td>0.54</td>
+                        <td>0.54</td>
                       </tr>
                     </tbody>
                   </table>
@@ -326,141 +325,118 @@
                     <tbody>
                       <tr>
                         <th>AAA</th>
-                        <td>0.99</td>
-                        <td>1.44</td>
+                        <td>0.92</td>
+                        <td>1.14</td>
                         <td>1.00</td>
                         <td>1.00</td>
                         <td>1.00</td>
                         <td>1.00</td>
-                        <td>0.89</td>
-                        <td>0.89</td>
+                        <td>0.96</td>
+                        <td>0.96</td>
                         <td>1.00</td>
                         <td>1.00</td>
-                        <td>1.11</td>
-                        <td>1.15</td>
-                        <td>1.15</td>
-                        <td>1.37</td>
-                        <td>0.59</td>
-                        <td>1.03</td>
-                        <td>1.03</td>
-                        <td>1.03</td>
-                        <td>1.03</td>
-                        <td>1.03</td>
+                        <td>1.13</td>
+                        <td>0.92</td>
+                        <td>0.92</td>
+                        <td>0.88</td>
+                        <td>0.56</td>
+                        <td>0.87</td>
+                        <td>0.87</td>
+                        <td>0.87</td>
+                        <td>0.87</td>
+                        <td>0.87</td>
                       </tr>
                       <tr>
-                        <th>AA</th>
-                        <td>0.89</td>
-                        <td>1.32</td>
+                        <th>AA/Fall</th>
+                        <td>0.92</td>
+                        <td>1.24</td>
                         <td>1.00</td>
                         <td>1.00</td>
                         <td>1.00</td>
                         <td>1.00</td>
-                        <td>0.94</td>
-                        <td>0.94</td>
-                        <td>0.98</td>
-                        <td>0.98</td>
-                        <td>1.14</td>
-                        <td>1.26</td>
-                        <td>1.26</td>
-                        <td>1.48</td>
-                        <td>0.58</td>
-                        <td>1.08</td>
-                        <td>1.08</td>
-                        <td>1.08</td>
-                        <td>1.08</td>
-                        <td>1.08</td>
+                        <td>0.99</td>
+                        <td>0.99</td>
+                        <td>0.99</td>
+                        <td>0.99</td>
+                        <td>1.25</td>
+                        <td>1.05</td>
+                        <td>1.05</td>
+                        <td>1.02</td>
+                        <td>0.50</td>
+                        <td>0.95</td>
+                        <td>0.95</td>
+                        <td>0.95</td>
+                        <td>0.95</td>
+                        <td>0.95</td>
                       </tr>
                       <tr>
                         <th>High-A</th>
-                        <td>0.89</td>
-                        <td>1.44</td>
+                        <td>0.92</td>
+                        <td>1.31</td>
                         <td>1.00</td>
                         <td>1.00</td>
                         <td>1.00</td>
                         <td>1.00</td>
+                        <td>0.96</td>
+                        <td>0.96</td>
+                        <td>0.98</td>
+                        <td>0.98</td>
+                        <td>1.28</td>
+                        <td>1.03</td>
+                        <td>1.03</td>
+                        <td>1.28</td>
+                        <td>0.46</td>
                         <td>0.92</td>
                         <td>0.92</td>
-                        <td>0.97</td>
-                        <td>0.97</td>
-                        <td>1.19</td>
-                        <td>1.37</td>
-                        <td>1.37</td>
-                        <td>2.20</td>
-                        <td>0.56</td>
-                        <td>1.11</td>
-                        <td>1.11</td>
-                        <td>1.11</td>
-                        <td>1.11</td>
-                        <td>1.11</td>
+                        <td>0.92</td>
+                        <td>0.92</td>
+                        <td>0.92</td>
                       </tr>
                       <tr>
                         <th>Low-A</th>
-                        <td>0.75</td>
-                        <td>1.26</td>
+                        <td>0.86</td>
+                        <td>1.27</td>
                         <td>1.00</td>
                         <td>1.00</td>
                         <td>1.00</td>
                         <td>1.00</td>
-                        <td>0.91</td>
-                        <td>0.91</td>
-                        <td>0.94</td>
-                        <td>0.94</td>
+                        <td>1.04</td>
+                        <td>1.04</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
                         <td>1.30</td>
-                        <td>1.59</td>
-                        <td>1.59</td>
-                        <td>3.13</td>
-                        <td>0.44</td>
-                        <td>1.11</td>
-                        <td>1.11</td>
-                        <td>1.11</td>
-                        <td>1.11</td>
-                        <td>1.11</td>
+                        <td>1.04</td>
+                        <td>1.04</td>
+                        <td>1.56</td>
+                        <td>0.45</td>
+                        <td>0.89</td>
+                        <td>0.89</td>
+                        <td>0.89</td>
+                        <td>0.89</td>
+                        <td>0.89</td>
                       </tr>
                       <tr>
                         <th>Rookie</th>
-                        <td>0.74</td>
-                        <td>1.34</td>
+                        <td>0.68</td>
+                        <td>1.10</td>
                         <td>1.00</td>
                         <td>1.00</td>
                         <td>1.00</td>
                         <td>1.00</td>
-                        <td>0.94</td>
-                        <td>0.94</td>
-                        <td>0.99</td>
-                        <td>0.99</td>
-                        <td>1.26</td>
-                        <td>1.33</td>
-                        <td>1.33</td>
-                        <td>1.98</td>
-                        <td>0.45</td>
-                        <td>0.98</td>
-                        <td>0.98</td>
-                        <td>0.98</td>
-                        <td>0.98</td>
-                        <td>0.98</td>
-                      </tr>
-                      <tr>
-                        <th>Fall</th>
-                        <td>0.61</td>
-                        <td>0.87</td>
-                        <td>1.00</td>
-                        <td>1.00</td>
-                        <td>1.00</td>
-                        <td>1.00</td>
-                        <td>0.00</td>
-                        <td>0.00</td>
-                        <td>1.00</td>
-                        <td>1.00</td>
-                        <td>1.25</td>
-                        <td>1.25</td>
-                        <td>1.25</td>
-                        <td>2.03</td>
-                        <td>0.55</td>
-                        <td>0.81</td>
-                        <td>0.81</td>
-                        <td>0.81</td>
-                        <td>0.81</td>
-                        <td>0.81</td>
+                        <td>1.04</td>
+                        <td>1.04</td>
+                        <td>0.96</td>
+                        <td>0.96</td>
+                        <td>1.30</td>
+                        <td>1.08</td>
+                        <td>1.08</td>
+                        <td>2.01</td>
+                        <td>0.38</td>
+                        <td>0.95</td>
+                        <td>0.95</td>
+                        <td>0.95</td>
+                        <td>0.95</td>
+                        <td>0.95</td>
                       </tr>
                     </tbody>
     
@@ -468,7 +444,7 @@
                 </div>
   
                 <h2 class="title is-3">Regression to the mean</h2>
-                <h3 class="subtitle is-5">Add average player stats as 15% of the max PA/BF, after removing players with less than 10% of the max PA/BF</h3>
+                <h3 class="subtitle is-5 is-italic">(Add average player stats as 15% of the max PA/BF, after removing players with less than 10% of the max PA/BF)</h3>
                 <p>
                   After each player's stats have been weighted, we roll them up into a single statline. Now it's time to regress.
                 </p>
@@ -483,7 +459,7 @@
                 </p>
   
                 <h2 class="title is-3">Playing time</h2>
-                <h3 class="subtitle is-5">650 PA for hitters, 800 BF for SP, 250 BF for RP</h3>
+                <h3 class="subtitle is-5 is-italic">(650 PA for hitters, 800 BF for SP, 250 BF for RP)</h3>
                 <p>
                   For now, playing time projections are kept simple. Every batter's stats are adjusted to exactly 650 PA. Version 1.0 also adjusted every pitcher to 650 BF, but this created obviously unrealistic projections for RP. Version 1.1 tweaks pitcher playing time by setting RP at 250 BF and SP at 800 BF. Pitchers in a mixed role fall in between those two numbers. For example, a pitcher who starts half of his games would be projected halfway between 250 and 800 at 525 BF.
                 </p>
