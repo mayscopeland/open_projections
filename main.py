@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template
 
 import pandas as pd
+import json
 
 import build_logs
 import blyleven as project
@@ -54,14 +55,17 @@ def get_player_projections():
     else:
         return "Error: No playerId provided. Please specify an (MLBAM) id."
 
-    df = pd.DataFrame()
-    df = project.load_player_projections(player_id, True)
+    data = {}
 
-    # Did we find batting projections?
-    if df.empty:
-        df = project.load_player_projections(player_id, False)
+    bat = pd.DataFrame()
+    bat = project.load_player_projections(player_id, True)
+    data["batting"] = bat.to_dict("records")
 
-    return df.to_json(orient="records")
+    pit = pd.DataFrame()
+    pit = project.load_player_projections(player_id, False)
+    data["pitching"] = pit.to_dict("records")
+
+    return json.dumps(data)
 
     
 if __name__ == "__main__":
