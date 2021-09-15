@@ -226,7 +226,7 @@ def load_player_projections(player_id, is_batting):
         if is_batting:
             int_cols = ["PA","AB","H","2B","3B","HR","R","RBI","SB","CS","BB","SO","GIDP","HBP","SH","SF","IBB"]
         else:
-            int_cols = ["W","L","G","GS","CG","SHO","SV","HLD","IP","H","R","ER","HR","BB","IBB","SO","HBP","BK","WP","BFP"]
+            int_cols = ["W","L","QS","G","GS","CG","SHO","SV","HLD","IP","H","R","ER","HR","BB","IBB","SO","HBP","BK","WP","BFP"]
         player[int_cols] = player[int_cols].astype(int)
         player.sort_values(by=["Date"], inplace=True, ascending=False)
 
