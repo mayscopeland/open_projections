@@ -104,6 +104,7 @@
                   <li>2.1 (2021-08-19): Update minor league factors. (Previous factors were too high for HR, especially.)</li>
                   <li>2.0 (2021-08-18): Initial release of Blyleven with separate weighting and regression for each stat!</li>
                 </ul>
+                <img src="{{ url_for('static', filename='img/blyleven.jpg') }}" class="is-pulled-right" style="margin: 10px;">
                 <h2 class="title is-3">Basics</h2>
                 <p>
                   The focus of the second iteration of the Open Projections&mdash;called <strong>Blyleven</strong>&mdash;is separate weightings and regressions for each component stat in the projection.
@@ -120,6 +121,385 @@
                     <li>Clay Davenport wrote about <a href="http://claydavenport.com/archives/123">incorporating this idea in his projections back in 2012.</a></li>
                   </ul>
                 <p>So, not new, but I'd still guess it's the next best upgrade for the Open Projections.</p>
+
+                <h2 class="title is-3">Weighting by recency</h2>
+                <h3 class="subtitle is-5 is-italic">Greater weighting for more recent data, especially for SO, BB, SB, and HR.</h3>
+                <p>
+                  Stats for each game are weighted by recency, so that more recent games are more influential in the projection. The weighting is n^daysAgo, where n is a decay rate specific to each stat. (See <strong>Aparicio</strong> below for additional background and discussion.)
+                </p>
+                <p>Each stat is weighted separately, depending on how much information is gained by the most recent data. SO are most affected by recent data, followed by walks, SB, and HR. Everything else receives the default weighting from Aparicio (0.9994).</p>
+                
+                <h3 class="title is-5">Stat Weights (Batting)</h3>
+                <table class="table is-narrow is-hoverable">
+                  <thead>
+                    <tr>
+                      <th>Stat</th>
+                      <th>Decay (n)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>SO</td>
+                      <td>0.9965</td>
+                    </tr>
+                    <tr>
+                      <td>UIBB</td>
+                      <td>0.9974</td>
+                    </tr>
+                    <tr>
+                      <td>IBB</td>
+                      <td>0.9974</td>
+                    </tr>
+                    <tr>
+                      <td>SB</td>
+                      <td>0.9974</td>
+                    </tr>
+                    <tr>
+                      <td>CS</td>
+                      <td>0.9974</td>
+                    </tr>
+                    <tr>
+                      <td>HR</td>
+                      <td>0.9985</td>
+                    </tr>
+                    <tr>
+                      <td>1B</td>
+                      <td>0.9994</td>
+                    </tr>
+                    <tr>
+                      <td>2B</td>
+                      <td>0.9994</td>
+                    </tr>
+                    <tr>
+                      <td>3B</td>
+                      <td>0.9994</td>
+                    </tr>
+                    <tr>
+                      <td>R</td>
+                      <td>0.9994</td>
+                    </tr>
+                    <tr>
+                      <td>RBI</td>
+                      <td>0.9994</td>
+                    </tr>
+                    <tr>
+                      <td>HBP</td>
+                      <td>0.9994</td>
+                    </tr>
+                    <tr>
+                      <td>SH</td>
+                      <td>0.9994</td>
+                    </tr>
+                    <tr>
+                      <td>SF</td>
+                      <td>0.9994</td>
+                    </tr>
+                    <tr>
+                      <td>GIDP</td>
+                      <td>0.9994</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p>
+                  Pitching stats most biased towards the recent data are SO, then H, and SV/HLD. BB and W/QS slightly favor recent stats, while the rest receive the default 0.9990 from Aparicio.
+                </p>
+                <h3 class="title is-5">Stat Weights (Pitching)</h3>
+                <table class="table is-narrow is-hoverable">
+                  <thead>
+                    <tr>
+                      <th>Stat</th>
+                      <th>Decay (n)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>SO</td>
+                      <td>0.9930</td>
+                    </tr>
+                    <tr>
+                      <td>H</td>
+                      <td>0.9955</td>
+                    </tr>
+                    <tr>
+                      <td>SV</td>
+                      <td>0.9970</td>
+                    </tr>
+                    <tr>
+                      <td>HLD</td>
+                      <td>0.9970</td>
+                    </tr>
+                    <tr>
+                      <td>HR</td>
+                      <td>0.9980</td>
+                    </tr>
+                    <tr>
+                      <td>UIBB</td>
+                      <td>0.9980</td>
+                    </tr>
+                    <tr>
+                      <td>HBP</td>
+                      <td>0.9980</td>
+                    </tr>
+                    <tr>
+                      <td>W</td>
+                      <td>0.9980</td>
+                    </tr>
+                    <tr>
+                      <td>QS</td>
+                      <td>0.9980</td>
+                    </tr>
+                    <tr>
+                      <td>R</td>
+                      <td>0.9990</td>
+                    </tr>
+                    <tr>
+                      <td>ER</td>
+                      <td>0.9990</td>
+                    </tr>
+                    <tr>
+                      <td>L</td>
+                      <td>0.9990</td>
+                    </tr>
+                    <tr>
+                      <td>G</td>
+                      <td>0.9990</td>
+                    </tr>
+                    <tr>
+                      <td>GS</td>
+                      <td>0.9990</td>
+                    </tr>
+                    <tr>
+                      <td>CG</td>
+                      <td>0.9990</td>
+                    </tr>
+                    <tr>
+                      <td>SHO</td>
+                      <td>0.9990</td>
+                    </tr>
+                    <tr>
+                      <td>WP</td>
+                      <td>0.9990</td>
+                    </tr>
+                    <tr>
+                      <td>BK</td>
+                      <td>0.9990</td>
+                    </tr>
+                    <tr>
+                      <td>IBB</td>
+                      <td>1.0000</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p>Note: These numbers were not created by an especially rigorous process. They were simply what worked well for projecting past seasons, alongside my own expectations. There is room to improve here.</p>
+                
+                <h2 class="title is-3">Weighting by level</h2>
+                <h3 class="subtitle is-5 is-italic">(45% for Spring, DT-based stat weights for minors)</h3>
+                <p>
+                  Weighting for minor leagues and spring training are unchanged from Aparicio v1.2.
+                </p>
+
+                <h2 class="title is-3">Regression to the mean</h2>
+                <h3 class="subtitle is-5 is-italic">(Add <em>n</em> PA of league average for each stat)</h3>
+                <p>
+                  Unlike Aparicio, each projected stat in Blyleven is subject to an individualized amount of regression.
+                </p>
+                <p>
+                  There has been a ton of research done in this area:
+                  <ul>
+                    <li>MGL's <a href="http://www.tangotiger.net/mgl/regression.pdf">Component Regression Values</a> and Tom Tango's <a href="http://tangotiger.net/archives/stud0274.shtml">response</a></li>
+                    <li>Russell Carleton's study of <a href="https://statspeakmvn.wordpress.com/2007/11/14/525600-minutes-how-do-you-measure-a-player-in-a-year/">hitters</a> and <a href="http://web.archive.org/web/20080112135748/mvn.com/mlb-stats/2008/01/06/on-the-reliability-of-pitching-stats/">pitchers</a></li>
+                    <li>Harry Pavlidis's study of <a href="https://tht.fangraphs.com/it-makes-sense-to-me-i-must-regress/">pitchers</a> and Tom Tango's <a href="http://www.insidethebook.com/ee/index.php/site/article/regression_equations_for_pitcher_events">response</a></li>
+                    <li>Derek Carty's study of <a href="https://www.baseballprospectus.com/fantasy/article/14215/resident-fantasy-genius-when-hitters-stats-stabilize/">hitters</a> and <a href="https://www.baseballprospectus.com/fantasy/article/14293/resident-fantasy-genius-when-pitchers-stats-stabilize/">pitchers</a> and Tom Tango's <a href="http://www.insidethebook.com/ee/index.php/site/comments/when_is_the_observed_data_half_real_and_half_noise#comments">response</a></li>
+                    <li>Russell Carleton's 2nd study of <a href="https://www.baseballprospectus.com/news/article/17659/baseball-therapy-its-a-small-sample-size-after-all/">hitters</a> and <a href="https://www.baseballprospectus.com/news/article/20516/baseball-therapy-should-i-worry-about-my-favorite-pitcher/">pitchers</a> and Tom Tango's <a href="http://www.insidethebook.com/ee/index.php/site/comments/updated_r50_numbers#comments">response</a></li>
+                    <li>Jonah Pemstein and Sean Dolinar's study of <a href="https://blogs.fangraphs.com/a-new-way-to-look-at-sample-size/">hitters</a> and Tom Tango's <a href="http://tangotiger.com/index.php/site/sample-size-and-regression-toward-the-mean">response</a></li>
+                    <li>Jonah Pemstein's follow-up study of <a href="https://blogs.fangraphs.com/a-long-needed-update-on-reliability/">hitters and pitchers</a></li>
+                  </ul>
+                </p>
+
+                <p>These studies were used to inform the Blyleven projections, although their different methodologies sometimes yield differing results, and some stats (e.g. SV) were never studied. The final regression amounts were the result of a bit of trial and error. As with the weighting for past results, there ought to be plenty of room for improvement.</p>
+
+                <p>For batters, each stat was combined with the following PAs of the league average performance:</p>
+                  
+                <h3 class="title is-5">Regression Amounts (Batting)</h3>
+                <table class="table is-narrow is-hoverable">
+                  <thead>
+                    <tr>
+                      <th>Stat</th>
+                      <th>Regression PA</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>SO</td>
+                      <td>92</td>
+                    </tr>
+                    <tr>
+                      <td>UIBB</td>
+                      <td>117</td>
+                    </tr>
+                    <tr>
+                      <td>IBB</td>
+                      <td>117</td>
+                    </tr>
+                    <tr>
+                      <td>SB</td>
+                      <td>81</td>
+                    </tr>
+                    <tr>
+                      <td>CS</td>
+                      <td>81</td>
+                    </tr>
+                    <tr>
+                      <td>HR</td>
+                      <td>175</td>
+                    </tr>
+                    <tr>
+                      <td>1B</td>
+                      <td>141</td>
+                    </tr>
+                    <tr>
+                      <td>2B</td>
+                      <td>354</td>
+                    </tr>
+                    <tr>
+                      <td>3B</td>
+                      <td>213</td>
+                    </tr>
+                    <tr>
+                      <td>R</td>
+                      <td>281</td>
+                    </tr>
+                    <tr>
+                      <td>RBI</td>
+                      <td>214</td>
+                    </tr>
+                    <tr>
+                      <td>HBP</td>
+                      <td>120</td>
+                    </tr>
+                    <tr>
+                      <td>SH</td>
+                      <td>200</td>
+                    </tr>
+                    <tr>
+                      <td>SF</td>
+                      <td>200</td>
+                    </tr>
+                    <tr>
+                      <td>GIDP</td>
+                      <td>200</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <p>Pitching regression is comparable to hitting, although a player's starts are regressed toward the league average starter, relief appearances toward the league average reliever.</p>
+                
+                <h3 class="title is-5">Regression Amounts (Pitching)</h3>
+                <table class="table is-narrow is-hoverable">
+                  <thead>
+                    <tr>
+                      <th>Stat</th>
+                      <th>Regression BF</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>SO</td>
+                      <td>70</td>
+                    </tr>
+                    <tr>
+                      <td>H</td>
+                      <td>600</td>
+                    </tr>
+                    <tr>
+                      <td>SV</td>
+                      <td>100</td>
+                    </tr>
+                    <tr>
+                      <td>HLD</td>
+                      <td>100</td>
+                    </tr>
+                    <tr>
+                      <td>HR</td>
+                      <td>1200</td>
+                    </tr>
+                    <tr>
+                      <td>UIBB</td>
+                      <td>170</td>
+                    </tr>
+                    <tr>
+                      <td>HBP</td>
+                      <td>200</td>
+                    </tr>
+                    <tr>
+                      <td>W</td>
+                      <td>200</td>
+                    </tr>
+                    <tr>
+                      <td>QS</td>
+                      <td>200</td>
+                    </tr>
+                    <tr>
+                      <td>R</td>
+                      <td>1200</td>
+                    </tr>
+                    <tr>
+                      <td>ER</td>
+                      <td>1200</td>
+                    </tr>
+                    <tr>
+                      <td>L</td>
+                      <td>200</td>
+                    </tr>
+                    <tr>
+                      <td>G</td>
+                      <td>200</td>
+                    </tr>
+                    <tr>
+                      <td>GS</td>
+                      <td>200</td>
+                    </tr>
+                    <tr>
+                      <td>CG</td>
+                      <td>200</td>
+                    </tr>
+                    <tr>
+                      <td>SHO</td>
+                      <td>200</td>
+                    </tr>
+                    <tr>
+                      <td>WP</td>
+                      <td>200</td>
+                    </tr>
+                    <tr>
+                      <td>BK</td>
+                      <td>200</td>
+                    </tr>
+                    <tr>
+                      <td>IBB</td>
+                      <td>200</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h2 class="title is-3">R/ER adjustment for pitchers</h2>
+                <h3 class="subtitle is-5 is-italic">(an average of projected kwERA and projected ERA)</h3>
+                <p>
+                  For pitchers, one extra step is added for Blyleven, borrowing (yet another) idea from the <a href="http://www.tangotiger.net/archives/stud0346.shtml">Marcels</a>.
+                </p>
+                <p>
+                  The <a href="http://www.insidethebook.com/ee/index.php/site/article/lego/">kwERA</a> is calculated for each pitcher, and then converted to kwER. ER are replaced by a simple average of their previous ER projection and their kwER projection.
+                </p>
+
+                <h2 class="title is-3">Playing time</h2>
+                <h3 class="subtitle is-5 is-italic">(650 PA for hitters, 800 BF for SP, 250 BF for RP)</h3>
+                <p>
+                  Playing time projections are unchanged from Aparicio v1.1.
+                </p>
+
+                <h2 class="title is-3">That's it!</h2>
+                <p>We're finished! Our Blyleven projections are completed. There's still a lot of room for improvement, but it should be another step in the right direction.</p>
+
               </div>
             </div>
           </div>
@@ -140,6 +520,7 @@
                   <li>1.1 (2021-08-07): Project RP at 250 BF and SP at 800 BF. (Previously both projected to 650 BF.)</li>
                   <li>1.0 (2021-03-31): Aparicio initial release!</li>
                 </ul>
+                <img src="{{ url_for('static', filename='img/aparicio.jpg') }}" class="is-pulled-right" style="margin: 10px;">
                 <h2 class="title is-3">Basics</h2>
                 <p>
                   The inaugural version 1 of the Open Projections&mdash;named <strong>Aparicio</strong>&mdash;starts with daily game logs for the past 2000 days (roughly the past six years). By working with daily stats, we are able to build projections for any point in time. A player's projection will gradually shift everyday as the new day's stats are collected and old stats fall out of the projection.
