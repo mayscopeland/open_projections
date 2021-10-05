@@ -4,7 +4,8 @@ import pandas as pd
 import json
 
 import build_logs
-import blyleven as project
+import blyleven as project2
+import campanella as project3
 
 app = Flask(__name__)
 
@@ -33,7 +34,7 @@ def put_day_stats(year, month, day):
 
 @app.route('/projections/<string:date_string>', methods=['PUT'])
 def put_projections(date_string):
-    project.project_all(date_string)
+    project2.project_all(date_string)
     return "Projections for " + date_string + " finished"
 
 @app.route('/projections/<string:date_string>', methods=['GET'])
@@ -45,7 +46,7 @@ def get_projections(date_string):
     else:
         return "Error: type must be batting or pitching."
 
-    df = project.load_projection(date_string, is_batting)
+    df = project2.load_projection(date_string, is_batting)
     return df.to_json(orient="records")
 
 @app.route('/projections/', methods=['GET'])
@@ -58,11 +59,47 @@ def get_player_projections():
     data = {}
 
     bat = pd.DataFrame()
-    bat = project.load_player_projections(player_id, True)
+    bat = project2.load_player_projections(player_id, True)
     data["batting"] = bat.to_dict("records")
 
     pit = pd.DataFrame()
-    pit = project.load_player_projections(player_id, False)
+    pit = project2.load_player_projections(player_id, False)
+    data["pitching"] = pit.to_dict("records")
+
+    return json.dumps(data)
+
+@app.route('/v3/projections/<string:date_string>', methods=['PUT'])
+def put_projections(date_string):
+    project3.project_all(date_string)
+    return "Projections for " + date_string + " finished"
+
+@app.route('/v3/projections/<string:date_string>', methods=['GET'])
+def get_projections(date_string):
+    if (request.args.get("type") == "batting"):
+        is_batting = True
+    elif (request.args.get("type") == "pitching"):
+        is_batting = False
+    else:
+        return "Error: type must be batting or pitching."
+
+    df = project3.load_projection(date_string, is_batting)
+    return df.to_json(orient="records")
+
+@app.route('/v3/projections/', methods=['GET'])
+def get_player_projections():
+    if 'playerId' in request.args:
+        player_id = int(request.args['playerId'])
+    else:
+        return "Error: No playerId provided. Please specify an (MLBAM) id."
+
+    data = {}
+
+    bat = pd.DataFrame()
+    bat = project3.load_player_projections(player_id, True)
+    data["batting"] = bat.to_dict("records")
+
+    pit = pd.DataFrame()
+    pit = project3.load_player_projections(player_id, False)
     data["pitching"] = pit.to_dict("records")
 
     return json.dumps(data)
