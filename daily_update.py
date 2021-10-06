@@ -17,4 +17,4 @@ y = today.strftime("%Y")
 m = today.strftime("%m")
 d = today.strftime("%d")
 
-r.put(f"http://www.open-projections.com/projections/{y}-{m}-{d}")
+r.put(f"http://www.open-projections.com/v3/projections/{y}-{m}-{d}")

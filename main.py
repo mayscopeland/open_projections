@@ -69,12 +69,12 @@ def get_player_projections():
     return json.dumps(data)
 
 @app.route('/v3/projections/<string:date_string>', methods=['PUT'])
-def put_projections(date_string):
+def put_v3_projections(date_string):
     project3.project_all(date_string)
     return "Projections for " + date_string + " finished"
 
 @app.route('/v3/projections/<string:date_string>', methods=['GET'])
-def get_projections(date_string):
+def get_v3_projections(date_string):
     if (request.args.get("type") == "batting"):
         is_batting = True
     elif (request.args.get("type") == "pitching"):
@@ -86,7 +86,7 @@ def get_projections(date_string):
     return df.to_json(orient="records")
 
 @app.route('/v3/projections/', methods=['GET'])
-def get_player_projections():
+def get_v3_player_projections():
     if 'playerId' in request.args:
         player_id = int(request.args['playerId'])
     else:
