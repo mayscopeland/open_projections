@@ -197,17 +197,17 @@ def load_names():
 def save_projection(date, df, is_batting):
 
     if is_batting:
-        filepath = Path(__file__).parent / "projections" / "batting"
+        filepath = Path(__file__).parent / "projections" / "v3" / "batting"
     else:
-        filepath = Path(__file__).parent / "projections" / "pitching"
+        filepath = Path(__file__).parent / "projections" / "v3" / "pitching"
     df.round().to_csv(filepath / (date + ".csv"), index_label="mlbam_id")
 
 def load_projection(date, is_batting):
 
     if is_batting:
-        filepath = Path(__file__).parent / "projections" / "batting"
+        filepath = Path(__file__).parent / "projections" / "v3" / "batting"
     else:
-        filepath = Path(__file__).parent / "projections" / "pitching"
+        filepath = Path(__file__).parent / "projections" / "v3" / "pitching"
     
     return pd.read_csv(filepath / (date + ".csv"))
 
@@ -217,9 +217,9 @@ def load_player_projections(player_id, is_batting):
     player = pd.DataFrame()
 
     if is_batting:
-        filedir = Path(__file__).parent / "projections" / "batting"
+        filedir = Path(__file__).parent / "projections" / "v3" / "batting"
     else:
-        filedir = Path(__file__).parent / "projections" / "pitching"
+        filedir = Path(__file__).parent / "projections" / "v3" / "pitching"
 
     files = [x for x in filedir.iterdir() if x.is_file()]
     for file in files:
