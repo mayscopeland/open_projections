@@ -18,3 +18,10 @@ m = today.strftime("%m")
 d = today.strftime("%d")
 
 r.put(f"http://www.open-projections.com/v3/projections/{y}-{m}-{d}")
+
+# In preseason, build an opening day projection, too
+if m in ["1","2","3","10","11","12"]:
+    if m in ["10", "11", "12"]:
+        y = date.today().year + 1
+    r.put(f"http://www.open-projections.com/v3/projections/{y}-04-01")
+
