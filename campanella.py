@@ -15,14 +15,14 @@ def project(projection_date_str, settings, is_batting):
 
     MAX_DAYS_AGO = 2000
     TOP_PA = 725
-    MIN_PA = 350
+    MIN_PA = 400
 
     TOP_BF = 850
     MIN_BF_SP = 400
     MIN_BF_RP = 200
 
     # Compared to the max appearances, what percentage does a player need to get a projection?
-    APPEARANCE_THRESHOLD = 0.10
+    APPEARANCE_THRESHOLD = 0.11
 
     # MLB's "GameTypes"
     SPRING_TRAINING = "S"
@@ -106,7 +106,7 @@ def project(projection_date_str, settings, is_batting):
     # For projected PA/BF, we're only considering MLB regular season
     df[appearances] *= (settings["decay_rates"][appearances] ** df["days_ago"])
     df["proj_app"] = df[appearances]
-    df.loc[df["game_type"] != REGULAR_SEASON, "proj_app"] *= 0
+    df.loc[(df["game_type"] == SPRING_TRAINING) | (df["game_type"] == EXHIBITION), "proj_app"] *= 0
     df.loc[df["league_id"] != MLB, "proj_app"] *= 0
 
     # Combine a player's daily data into a single row
@@ -132,12 +132,15 @@ def project(projection_date_str, settings, is_batting):
 
     # Scale everyone's PA/BF in relation to the top player
     if is_batting:
+        # Scale hitters out between the set min and max PA based on 
         pa_factor = (TOP_PA - MIN_PA) / pr["proj_app"].max()
         pr[appearances] = pr["proj_app"] * pa_factor + MIN_PA
     else:
-        pa_factor = (TOP_BF - MIN_BF_SP) / pr["proj_app"].max()
-        min_bf = MIN_BF_SP * pr["start_pct"] + MIN_BF_RP * (1 - pr["start_pct"])
-        pr[appearances] = pr["proj_app"] * pa_factor + min_bf
+        pa_factor = TOP_BF / pr["proj_app"].max()
+        pr[appearances] = pr["proj_app"] * pa_factor
+ 
+        # For pitchers below the minimum, bump up their BF based on their starts
+        pr.loc[pr[appearances] < MIN_BF_RP, appearances] += MIN_BF_SP * pr["start_pct"] + MIN_BF_RP * (1 - pr["start_pct"])
 
     # Apply projected rates out to the projected playing time
     for stat in settings["base_stats"]:
@@ -240,6 +243,7 @@ def load_player_projections(player_id, is_batting):
 
         # Only keep the most recent projection 
         # and 1 projection for each of the previous months.
+        player = player[player["Date"] <= datetime.today().strftime('%Y-%m-%d')]
         player = player[(player["Date"] == player["Date"].max()) | (pd.DatetimeIndex(player["Date"]).day == 1)]
 
 
