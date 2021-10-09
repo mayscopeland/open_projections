@@ -94,12 +94,13 @@
         <div class="column is-8 is-offset-2">
           <div class="card">
             <header class="card-header">
-              <div class="card-content title is-1">Current Version: 3.0 (Campanella)</h1>
+              <div class="card-content title is-1">Current Version: 3.1 (Campanella)</h1>
             </header>
             <div class="card-content">
               <div class="content">
                 <h2 class="title is-3">Changelog</h2>
                 <ul>
+                  <li>3.1 (2021-10-09): Bump minimum PA to 400 PA for batters and include post-season PA in playing time projection; rescale pitchers playing time; increased minimum for projection from 10% to 11%</li>
                   <li>3.0 (2021-10-06): Initial release of Campanella with playing time projections!</li>
                 </ul>
                 <img src="{{ url_for('static', filename='img/campanella.jpg') }}" class="is-pulled-right" style="margin: 10px;">
@@ -111,14 +112,14 @@
                   The big change is <strong>playing time projections</strong>. PA/BF are weighted at 0.9955^daysAgo, which heavily favors playing time in the most recent seasons. PA/BF from minor league and spring training games are not counted at all (i.e. weighted at 0).
                 </p>
                 <p>
-                  All batters receive a base playing time projection of 350 PA. The batter with the most projected PA is adjusted to 725 PA, and everyone else is scaled accordingly.
+                  In order to receive a projection, a player must have at least 11% of the projected PA/BF of the highest projected player. (For this check, PA/BF at any level are counted.) Version 3.0 had the threshold set at 10%, but some NL pitchers were able to sneak a batting projection at that cutoff.
                 </p>
                 <p>
-                  Starting pitchers receive a base playing time projection of 400 BF and relievers receive 200 BF. The pitcher with the most projected BF is adjusted to 850 BF, and everyone else is scaled accordingly.
+                  All batters receive a base playing time projection of 400 PA. The batter with the most projected PA is adjusted to 725 PA, and everyone else is scaled accordingly between the min and max.
                 </p>
-                <br>
-                <br>
-                <br>
+                <p>
+                  The pitcher with the most projected BF is adjusted to 850 BF, and everyone else is scaled accordingly. RP below 200 BF are increased by 200, and SP below 400 BF are increased by 400.
+                </p>
 
               </div>
             </div>
