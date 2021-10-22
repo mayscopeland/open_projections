@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def main():
-    build_monthly_gamelogs("2021", "09")
+    build_monthly_gamelogs("2021", "10")
     combine_gamelogs()
     #build_yearly_gamelogs("2014")
     #combine_player_logs(670623)

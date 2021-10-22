@@ -106,7 +106,7 @@ def project(projection_date_str, settings, is_batting):
     # For projected PA/BF, we're only considering MLB regular season
     df[appearances] *= (settings["decay_rates"][appearances] ** df["days_ago"])
     df["proj_app"] = df[appearances]
-    df.loc[(df["game_type"] == SPRING_TRAINING) | (df["game_type"] == EXHIBITION), "proj_app"] *= 0
+    df.loc[df["game_type"] != REGULAR_SEASON, "proj_app"] *= 0
     df.loc[df["league_id"] != MLB, "proj_app"] *= 0
 
     # Combine a player's daily data into a single row
