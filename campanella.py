@@ -117,7 +117,7 @@ def project(projection_date_str, settings, is_batting):
     pr = pr[pr[appearances] > (max_pa * APPEARANCE_THRESHOLD)]
 
     if not is_batting:
-        pr["start_pct"] = pr["GS"] / pr["G"]
+        pr["start_pct"] = (pr["GS"] * 5) / ((pr["GS"] * 5) + (pr["G"] - pr["GS"]))
 
     # Add league average
     for stat in settings["base_stats"]:
