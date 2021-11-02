@@ -24,6 +24,7 @@ body {
 .hero.is-light .title {
   color: rgba(0, 0, 0, 0.9);
   text-shadow: 1px 1px 4px #b5b5b5;
+  font-family: 'Playball', 'Brush Script MT', cursive;
 }
 
 @media screen and (min-width: 1024px) {
@@ -31,10 +32,6 @@ body {
     font-size: 6rem;
     text-shadow: 2px 2px 4px #b5b5b5;
   }
-}
-
-.hero h1 {
-  font-family: 'Playball', 'Brush Script MT', cursive;
 }
 
 .hero a {
