@@ -127,6 +127,8 @@
               <div class="content">
                 <h2 class="title is-3">Changelog</h2>
                 <ul>
+                  <li>3.4 (2022-01-25): Shift pitcher H decay rate from 0.995 to 0.998 and reduce regression from 600 PA to 200 PA.</li>
+                  <li>3.3 (2021-10-26): When projecting SP/RP usage, weight GS 5x as much as relief appearances (assuming a GS is 5 IP and relief is 1 IP).</li>
                   <li>3.2 (2021-10-21): Remove post-season PA from playing time projection, as it skews playoff pitchers too much</li>
                   <li>3.1 (2021-10-09): Bump minimum PA to 400 PA for batters and include post-season PA in playing time projection; rescale pitchers playing time; increased minimum for projection from 10% to 11%</li>
                   <li>3.0 (2021-10-06): Initial release of Campanella with playing time projections!</li>
@@ -283,7 +285,7 @@
                     </tr>
                     <tr>
                       <td>H</td>
-                      <td>0.9955</td>
+                      <td>0.9980</td>
                     </tr>
                     <tr>
                       <td>SV</td>
@@ -474,7 +476,7 @@
                     </tr>
                     <tr>
                       <td>H</td>
-                      <td>600</td>
+                      <td>200</td>
                     </tr>
                     <tr>
                       <td>SV</td>
