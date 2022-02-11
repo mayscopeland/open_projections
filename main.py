@@ -7,7 +7,7 @@ import build_logs
 import blyleven as project2
 import campanella as project3
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="assets")
 
 @app.route("/")
 def index():
