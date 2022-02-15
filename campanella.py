@@ -171,8 +171,9 @@ def project(projection_date_str, settings, is_batting):
 
 def load_gamelogs(is_batting):
     df = pd.DataFrame()
-    
-    con = sqlite3.connect('gamelogs.db')
+    filepath = Path(__file__).parent
+
+    con = sqlite3.connect(filepath / "gamelogs.db")
 
     if is_batting:
         df = pd.read_sql_query("SELECT * FROM batting", con)
