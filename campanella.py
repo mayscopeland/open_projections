@@ -1,6 +1,7 @@
 import pandas as pd
 from datetime import datetime
 from pathlib import Path
+import sqlite3
 
 def main():
     project_all("2022-04-01")
@@ -44,9 +45,9 @@ def project(projection_date_str, settings, is_batting):
 
     # Calculate days ago
     projection_date = datetime.strptime(projection_date_str, "%Y-%m-%d")
-    df["date"] = pd.to_datetime(df["date"], infer_datetime_format=True)
+    df["game_date"] = pd.to_datetime(df["game_date"], infer_datetime_format=True)
 
-    df["days_ago"] = (projection_date - df["date"]).dt.days
+    df["days_ago"] = (projection_date - df["game_date"]).dt.days
 
     # Remove data before and after the projection window
     df = df[df["days_ago"] <= MAX_DAYS_AGO]
@@ -170,12 +171,13 @@ def project(projection_date_str, settings, is_batting):
 
 def load_gamelogs(is_batting):
     df = pd.DataFrame()
+    
+    con = sqlite3.connect('gamelogs.db')
 
-    filepath = Path(__file__).parent
     if is_batting:
-        df = pd.read_csv(filepath / "stats" / "batting.csv")
+        df = pd.read_sql_query("SELECT * FROM batting", con)
     else:
-        df = pd.read_csv(filepath / "stats" / "pitching.csv")
+        df = pd.read_sql_query("SELECT * FROM pitching", con)
 
         df["IP"] = df["IP"].map(convert_ip)
 

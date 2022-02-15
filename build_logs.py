@@ -1,59 +1,43 @@
-import pandas as pd
 import requests
 import datetime
 import calendar
-from pathlib import Path
+import sqlite3
 
 
 def main():
-    build_monthly_gamelogs("2021", "10")
-    combine_gamelogs()
-    #build_yearly_gamelogs("2014")
-    #combine_player_logs(670623)
+    setup_db()
+    build_yearly_gamelogs("2021")
+    #build_monthly_gamelogs("2020","12")
+    #build_daily_gamelogs("2014-01-08")
 
+def setup_db():
+    con = sqlite3.connect("gamelogs.db")
+    cur = con.cursor()
 
-def combine_gamelogs():
-    filepath = Path(__file__).parent
-    all_batting = (filepath / "stats" / "batting").glob("*.csv")
-
-    li = []
-
-    for filename in all_batting:
-        df = pd.read_csv(filename, index_col=None, header=0)
-        li.append(df)
-
-    frame = pd.concat(li, axis=0, ignore_index=True)
+    # Create tables
+    cur.execute('''CREATE TABLE IF NOT EXISTS batting
+                (game_date text, game_id integer, game_type text, venue_id integer, league_id integer,
+                 player_id integer, batting_order text, AB integer, R integer, H integer,
+                "2B" integer, "3B" integer, HR integer, RBI integer, SB integer, CS integer, BB integer,
+                SO integer, IBB integer, HBP integer, SH integer, SF integer, GIDP integer)''')
+    cur.execute('''CREATE TABLE IF NOT EXISTS pitching
+                (game_date text, game_id integer, game_type text, venue_id integer, league_id integer,
+                 player_id integer, W integer, L integer, G integer, GS integer, CG integer,
+                 SHO integer, QS integer, SV integer, HLD integer, BFP integer, IP real,
+                 H integer, ER integer, R integer, HR integer, SO integer, BB integer, IBB integer,
+                 HBP integer, WP integer, BK integer)''')
     
-    frame.to_csv(filepath / "stats" / "batting.csv", index=False)
-
-    all_pitching = (filepath / "stats" / "pitching").glob("*.csv")
-
-    li = []
-
-    for filename in all_pitching:
-        df = pd.read_csv(filename, index_col=None, header=0)
-        li.append(df)
-
-    frame = pd.concat(li, axis=0, ignore_index=True)
-    frame["QS"] = frame.apply(quality_start, axis=1)
-    
-    frame.to_csv(filepath / "stats" / "pitching.csv", index=False)
-
-
-def quality_start(s):
-    if s["GS"] > 0:
-        if s["IP"] >= 6:
-            if s["ER"] <= 3:
-                return 1
-    
-    return 0
+    cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_game_batter ON batting (game_id, player_id);")
+    cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_game_pitcher ON pitching (game_id, player_id);")
+    con.close()
 
 
 def build_yearly_gamelogs(year):
 
-    bb_months = ["01","02","03","04","05","06","07","08","09","10","11","12"]
 
-    for month in bb_months:
+    months = ["01","02","03","04","05","06","07","08","09","10","11","12"]
+
+    for month in months:
         build_monthly_gamelogs(year, month)
 
 
@@ -69,35 +53,39 @@ def build_monthly_gamelogs(year, month):
 
 def build_daily_gamelogs(date_string):
 
-    df_batting = pd.DataFrame()
-    df_pitching = pd.DataFrame()
     games = []
-    filename = date_string + ".csv"
-    batting_file = Path(__file__).parent / "stats" / "batting" / filename
-    pitching_file = Path(__file__).parent / "stats" / "pitching" / filename
         
-    if not batting_file.is_file():
-        print(date_string)
-        # Get a list of game ids for games on this date
-        games = get_games(date_string)
+    print(date_string)
+     # Get a list of game ids for games on this date
+    games = get_games(date_string)
+
+    con = sqlite3.connect('gamelogs.db')
+    cur = con.cursor()
 
     # For each game, get the stats for every player
     for game in games:
         game_batting, game_pitching = get_game_logs(game)
 
-        # Convert our list to a DataFrame
-        df_game_batting = pd.DataFrame(game_batting)
-        df_game_pitching = pd.DataFrame(game_pitching)
+        # Insert into DB
+        for row in game_batting:
+            cur.execute('''REPLACE INTO batting VALUES
+                        (:game_date, :game_id, :game_type, :venue_id, :league_id,
+                         :player_id, :batting_order, :AB, :R, :H, :2B, :3B, 
+                         :HR, :RBI, :SB, :CS, :BB, :SO, :IBB, :HBP, :SH,
+                         :SF, :GIDP)''', row)
+        
+        for row in game_pitching:
+            cur.execute('''REPLACE INTO pitching VALUES
+                        (:game_date, :game_id, :game_type, :venue_id, :league_id,
+                         :player_id, :W, :L, :G, :GS, :CG, :SHO, :QS, :SV, 
+                         :HLD, :BFP, :IP, :H, :ER, :R, :HR, :SO, :BB, :IBB,
+                         :HBP, :WP, :BK)''', row)
+        
+    
+    con.commit()
+    con.close()
 
-        # Append daily stats to our running total
-        df_batting = df_batting.append(df_game_batting)
-        df_pitching = df_pitching.append(df_game_pitching)
-        #print(df_game_batting.head())
-        #print(df_game_pitching.head())
 
-    if games:
-        df_batting.to_csv(batting_file, index=False)
-        df_pitching.to_csv(pitching_file, index=False)
 
 def get_games(date_string):
 
@@ -134,66 +122,73 @@ def get_game_logs(game):
     url = "https://statsapi.mlb.com/api/v1/game/{}/boxscore".format(game["game_id"])
     game_info = requests.get(url).json()
 
-    for team in game_info["teams"].values():
-        for player in team["players"].values():
-            if player["stats"]["batting"]:
-                batting_log = {}
-                batting_log["date"] = game["date"]
-                batting_log["game_id"] = game["game_id"]
-                batting_log["game_type"] = game["game_type"]
-                batting_log["venue_id"] = game["venue_id"]
-                batting_log["league_id"] = game["league_id"]
-                batting_log["player_id"] = player["person"]["id"]
-                batting_log["batting_order"] = player.get("battingOrder", "")
-                batting_log["AB"] = player["stats"]["batting"]["atBats"]
-                batting_log["R"] = player["stats"]["batting"]["runs"]
-                batting_log["H"] = player["stats"]["batting"]["hits"]
-                batting_log["2B"] = player["stats"]["batting"]["doubles"]
-                batting_log["3B"] = player["stats"]["batting"]["triples"]
-                batting_log["HR"] = player["stats"]["batting"]["homeRuns"]
-                batting_log["RBI"] = player["stats"]["batting"]["rbi"]
-                batting_log["SB"] = player["stats"]["batting"]["stolenBases"]
-                batting_log["CS"] = player["stats"]["batting"]["caughtStealing"]
-                batting_log["BB"] = player["stats"]["batting"]["baseOnBalls"]
-                batting_log["SO"] = player["stats"]["batting"]["strikeOuts"]
-                batting_log["IBB"] = player["stats"]["batting"]["intentionalWalks"]
-                batting_log["HBP"] = player["stats"]["batting"]["hitByPitch"]
-                batting_log["SH"] = player["stats"]["batting"]["sacBunts"]
-                batting_log["SF"] = player["stats"]["batting"]["sacFlies"]
-                batting_log["GIDP"] = player["stats"]["batting"]["groundIntoDoublePlay"]
+    print(game["game_id"])
+    if "teams" in game_info:
+        for team in game_info["teams"].values():
+            for player in team["players"].values():
+                if player["stats"]["batting"]:
+                    batting_log = {}
+                    batting_log["game_date"] = game["date"]
+                    batting_log["game_id"] = int(game["game_id"])
+                    batting_log["game_type"] = game["game_type"]
+                    batting_log["venue_id"] = int(game["venue_id"])
+                    batting_log["league_id"] = int(game["league_id"])
+                    batting_log["player_id"] = int(player["person"]["id"])
+                    batting_log["batting_order"] = player.get("battingOrder", "")
+                    batting_log["AB"] = int(player["stats"]["batting"]["atBats"])
+                    batting_log["R"] = int(player["stats"]["batting"]["runs"])
+                    batting_log["H"] = int(player["stats"]["batting"]["hits"])
+                    batting_log["2B"] = int(player["stats"]["batting"]["doubles"])
+                    batting_log["3B"] = int(player["stats"]["batting"]["triples"])
+                    batting_log["HR"] = int(player["stats"]["batting"]["homeRuns"])
+                    batting_log["RBI"] = int(player["stats"]["batting"]["rbi"])
+                    batting_log["SB"] = int(player["stats"]["batting"]["stolenBases"])
+                    batting_log["CS"] = int(player["stats"]["batting"]["caughtStealing"])
+                    batting_log["BB"] = int(player["stats"]["batting"]["baseOnBalls"])
+                    batting_log["SO"] = int(player["stats"]["batting"]["strikeOuts"])
+                    batting_log["IBB"] = int(player["stats"]["batting"]["intentionalWalks"])
+                    batting_log["HBP"] = int(player["stats"]["batting"]["hitByPitch"])
+                    batting_log["SH"] = int(player["stats"]["batting"]["sacBunts"])
+                    batting_log["SF"] = int(player["stats"]["batting"]["sacFlies"])
+                    batting_log["GIDP"] = int(player["stats"]["batting"]["groundIntoDoublePlay"])
 
-                batting_logs.append(batting_log)
+                    batting_logs.append(batting_log)
 
-            if player["stats"]["pitching"]:
-                pitching_log = {}
-                pitching_log["date"] = game["date"]
-                pitching_log["game_id"] = game["game_id"]
-                pitching_log["game_type"] = game["game_type"]
-                pitching_log["venue_id"] = game["venue_id"]
-                pitching_log["league_id"] = game["league_id"]
-                pitching_log["player_id"] = player["person"]["id"]
-                pitching_log["W"] = player["stats"]["pitching"].get("wins", "")
-                pitching_log["L"] = player["stats"]["pitching"].get("losses", "")
-                pitching_log["G"] = player["stats"]["pitching"].get("gamesPlayed", "")
-                pitching_log["GS"] = player["stats"]["pitching"].get("gamesStarted", "")
-                pitching_log["CG"] = player["stats"]["pitching"].get("completeGames", "")
-                pitching_log["SHO"] = player["stats"]["pitching"].get("shutouts", "")
-                pitching_log["SV"] = player["stats"]["pitching"].get("saves", "")
-                pitching_log["HLD"] = player["stats"]["pitching"].get("holds", "")
-                pitching_log["BFP"] = player["stats"]["pitching"].get("battersFaced", "")
-                pitching_log["IP"] = player["stats"]["pitching"].get("inningsPitched", "")
-                pitching_log["H"] = player["stats"]["pitching"].get("hits", "")
-                pitching_log["ER"] = player["stats"]["pitching"].get("earnedRuns", "")
-                pitching_log["R"] = player["stats"]["pitching"].get("runs", "")
-                pitching_log["HR"] = player["stats"]["pitching"].get("homeRuns", "")
-                pitching_log["SO"] = player["stats"]["pitching"].get("strikeOuts", "")
-                pitching_log["BB"] = player["stats"]["pitching"].get("baseOnBalls", "")
-                pitching_log["IBB"] = player["stats"]["pitching"].get("intentionalWalks", "")
-                pitching_log["HBP"] = player["stats"]["pitching"].get("hitByPitch", "")
-                pitching_log["WP"] = player["stats"]["pitching"].get("wildPitches", "")
-                pitching_log["BK"] = player["stats"]["pitching"].get("balks", "")
+                if player["stats"]["pitching"]:
+                    pitching_log = {}
+                    pitching_log["game_date"] = game["date"]
+                    pitching_log["game_id"] = int(game["game_id"])
+                    pitching_log["game_type"] = game["game_type"]
+                    pitching_log["venue_id"] = int(game["venue_id"])
+                    pitching_log["league_id"] = int(game["league_id"])
+                    pitching_log["player_id"] = int(player["person"]["id"])
+                    pitching_log["W"] = int(player["stats"]["pitching"].get("wins", ""))
+                    pitching_log["L"] = int(player["stats"]["pitching"].get("losses", ""))
+                    pitching_log["G"] = int(player["stats"]["pitching"].get("gamesPlayed", ""))
+                    pitching_log["GS"] = int(player["stats"]["pitching"].get("gamesStarted", ""))
+                    pitching_log["CG"] = int(player["stats"]["pitching"].get("completeGames", ""))
+                    pitching_log["SHO"] = int(player["stats"]["pitching"].get("shutouts", ""))
+                    pitching_log["SV"] = int(player["stats"]["pitching"].get("saves", ""))
+                    pitching_log["HLD"] = int(player["stats"]["pitching"].get("holds", ""))
+                    pitching_log["BFP"] = int(player["stats"]["pitching"].get("battersFaced", ""))
+                    pitching_log["IP"] = float(player["stats"]["pitching"].get("inningsPitched", ""))
+                    pitching_log["H"] = int(player["stats"]["pitching"].get("hits", ""))
+                    pitching_log["ER"] = int(player["stats"]["pitching"].get("earnedRuns", ""))
+                    pitching_log["R"] = int(player["stats"]["pitching"].get("runs", ""))
+                    pitching_log["HR"] = int(player["stats"]["pitching"].get("homeRuns", ""))
+                    pitching_log["SO"] = int(player["stats"]["pitching"].get("strikeOuts", ""))
+                    pitching_log["BB"] = int(player["stats"]["pitching"].get("baseOnBalls", ""))
+                    pitching_log["IBB"] = int(player["stats"]["pitching"].get("intentionalWalks", ""))
+                    pitching_log["HBP"] = int(player["stats"]["pitching"].get("hitByPitch", ""))
+                    pitching_log["WP"] = int(player["stats"]["pitching"].get("wildPitches", ""))
+                    pitching_log["BK"] = int(player["stats"]["pitching"].get("balks", ""))
 
-                pitching_logs.append(pitching_log)
+                    if pitching_log["GS"] > 0 and pitching_log["IP"] >= 6 and pitching_log["ER"] <= 3:
+                        pitching_log["QS"] = 1
+                    else:
+                        pitching_log["QS"] = 0
+
+                    pitching_logs.append(pitching_log)
 
     return batting_logs, pitching_logs
 
