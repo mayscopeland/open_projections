@@ -39,34 +39,20 @@ def put_projections(date_string):
 
 @app.route('/projections/<string:date_string>', methods=['GET'])
 def get_projections(date_string):
-    if (request.args.get("type") == "batting"):
-        is_batting = True
-    elif (request.args.get("type") == "pitching"):
-        is_batting = False
-    else:
-        return "Error: type must be batting or pitching."
 
-    df = project2.load_projection(date_string, is_batting)
-    return df.to_json(orient="records")
+    batting_df = project3.load_projection(date_string, True)
+    pitching_df = project3.load_projection(date_string, False)
 
-@app.route('/projections/', methods=['GET'])
-def get_player_projections():
-    if 'playerId' in request.args:
-        player_id = int(request.args['playerId'])
-    else:
-        return "Error: No playerId provided. Please specify an (MLBAM) id."
+    numeric_cols = batting_df.select_dtypes(include="number")
+    batting_df[numeric_cols.columns] = numeric_cols.astype(int)
+    numeric_cols = pitching_df.select_dtypes(include="number")
+    pitching_df[numeric_cols.columns] = numeric_cols.astype(int)
 
-    data = {}
+    batting_html = batting_df.to_html(classes="table is-hoverable sortable", index=False)
+    pitching_html = pitching_df.to_html(classes="table is-hoverable sortable", index=False)
 
-    bat = pd.DataFrame()
-    bat = project2.load_player_projections(player_id, True)
-    data["batting"] = bat.to_dict("records")
+    return render_template("projections.html", batting=batting_html, pitching=pitching_html, date_string=date_string)
 
-    pit = pd.DataFrame()
-    pit = project2.load_player_projections(player_id, False)
-    data["pitching"] = pit.to_dict("records")
-
-    return json.dumps(data)
 
 @app.route('/v3/projections/<string:date_string>', methods=['PUT'])
 def put_v3_projections(date_string):

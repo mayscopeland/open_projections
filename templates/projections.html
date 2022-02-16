@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/sortable.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h1 class="title">Open Projections for {{ date_string }}</h1>
+    <div class="tabs is-boxed is-medium">
+      <ul>
+        <li class="is-active" id="tabBatting"><a>Batting</a></li>
+        <li id="tabPitching"><a>Pitching</a></li>
+      </ul>
+    </div>
+    
+    <div class="table-container" id="divBatting">
+      {{ batting|safe }}
+    </div>
+    
+    <div class="table-container is-hidden" id="divPitching">
+      {{ pitching|safe }}
+    </div>
+   
+
+  </div>
+</section>
+<script src="{{ url_for('static', filename='js/sortable.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script>
+  function showBatting() {
+    document.getElementById('divBatting').classList.remove("is-hidden")
+    document.getElementById('divPitching').classList.add("is-hidden")
+
+    document.getElementById('tabBatting').classList.add("is-active")
+    document.getElementById('tabPitching').classList.remove("is-active")
+
+  }
+
+  function showPitching() {
+    document.getElementById('divBatting').classList.add("is-hidden")
+    document.getElementById('divPitching').classList.remove("is-hidden") 
+    
+    document.getElementById('tabBatting').classList.remove("is-active")
+    document.getElementById('tabPitching').classList.add("is-active")
+
+  }
+
+  window.onload = function() {
+  document.getElementById("tabBatting").onclick = function() {
+    showBatting();
+    return false;
+  }
+    
+  document.getElementById("tabPitching").onclick = function() {
+    showPitching();
+    return false;
+  }
+}
+
+</script>
+{% endblock %}
