@@ -1,4 +1,5 @@
 *.csv
 *.xlsx
 *.db
+/bulma
 __pycache__

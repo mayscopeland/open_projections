@@ -7,10 +7,6 @@ body {
   font-size: 26px;
 }
 
-.navbar-brand a {
-  text-decoration: none;
-}
-
 .navbar-brand img {
   margin-right: 5px;
 }
@@ -27,35 +23,13 @@ body {
   font-family: 'Playball', 'Brush Script MT', cursive;
 }
 
+.card {
+  height: 100%;
+}
+
 @media screen and (min-width: 1024px) {
   .hero.is-light .title {
     font-size: 6rem;
     text-shadow: 2px 2px 4px #b5b5b5;
   }
-}
-
-.hero a {
-  text-decoration: none;
-}
-
-/* Projections page */
-
-/* Table sort icons */
-table.js-sort-table thead tr > th:not(.js-sort-none) {
-    cursor:pointer;
-	padding-left: 3px;
-}
-
-table.js-sort-table thead tr > th:not(.js-sort-none)::after{
-  content:url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIUnC2nKLnT4or00PvyrQwrPzUZshQAOw==);
-}
-table.js-sort-asc thead tr > .js-sort-active:not(.js-sort-none)::after{
-  content:url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIRnC2nKLnT4or00Puy3rx7VQAAOw==);
-}
-table.js-sort-desc thead tr > .js-sort-active:not(.js-sort-none)::after{
-  content:url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIPnI+py+0/hJzz0IruwjsVADs=);
-}
-
-th, td {
-  white-space:nowrap;
 }

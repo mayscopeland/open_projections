@@ -1,7 +1,8 @@
-from flask import Flask, request, render_template
+from flask import Flask, Response, redirect, request, render_template
 
 import pandas as pd
 import json
+from datetime import datetime
 
 import build_logs
 import blyleven as project2
@@ -37,11 +38,25 @@ def put_projections(date_string):
     project2.project_all(date_string)
     return "Projections for " + date_string + " finished"
 
+@app.route('/projections/', methods=['GET'])
+def get_latest_projections():
+    return redirect('/projections/2022-04-01')
+
 @app.route('/projections/<string:date_string>', methods=['GET'])
 def get_projections(date_string):
 
     batting_df = project3.load_projection(date_string, True)
     pitching_df = project3.load_projection(date_string, False)
+
+    if "csv" in request.args:
+        csv_type = request.args["csv"]
+    else:
+        csv_type = None
+
+    if csv_type == "batting":
+        return Response(batting_df.to_csv(index=False), mimetype="text/csv", headers={"Content-disposition": "attachment; filename=" + date_string + "Batting.csv"})
+    elif csv_type == "pitching":
+        return Response(pitching_df.to_csv(index=False), mimetype="text/csv", headers={"Content-disposition": "attachment; filename=" + date_string + "Pitching.csv"})
 
     numeric_cols = batting_df.select_dtypes(include="number")
     batting_df[numeric_cols.columns] = numeric_cols.astype(int)
@@ -51,7 +66,25 @@ def get_projections(date_string):
     batting_html = batting_df.to_html(classes="table is-hoverable sortable", index=False)
     pitching_html = pitching_df.to_html(classes="table is-hoverable sortable", index=False)
 
-    return render_template("projections.html", batting=batting_html, pitching=pitching_html, date_string=date_string)
+    d = datetime(2020, 6, 1)
+
+    dates = []
+    while d < datetime.today():
+        dates.append(d)
+
+        if d.month == 12:
+            d = datetime(d.year + 1, 1, 1)
+        else:
+            d = datetime(d.year, d.month + 1, 1)
+    
+    preseason_date = datetime(2022, 4, 1)
+
+    if not preseason_date in dates:
+        dates.append(preseason_date)
+
+    selected_date = datetime.strptime(date_string, "%Y-%m-%d")
+
+    return render_template("projections.html", batting=batting_html, pitching=pitching_html, dates=dates, selected_date=selected_date)
 
 
 @app.route('/v3/projections/<string:date_string>', methods=['PUT'])

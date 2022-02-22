@@ -7,7 +7,17 @@
 {% block content %}
 <section class="section">
   <div class="container">
-    <h1 class="title">Open Projections for {{ date_string }}</h1>
+    <h1 class="title">Open Projections for {{ selected_date.strftime('%Y-%m-%d') }}</h1>
+    <div class="select mb-3">
+      <select id="dateSelect" onchange='location = "/projections/" + this.value;'>
+        {% for d in dates %}
+        <option value="{{d.strftime('%Y-%m-%d')}}"
+          {% if d == selected_date %}selected="selected"{% endif %}>
+          {{d.strftime('%Y-%m-%d')}}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
     <div class="tabs is-boxed is-medium">
       <ul>
         <li class="is-active" id="tabBatting"><a>Batting</a></li>
@@ -16,10 +26,12 @@
     </div>
     
     <div class="table-container" id="divBatting">
+      <a href="/projections/{{selected_date.strftime('%Y-%m-%d')}}?csv=batting" class="button is-primary mb-3">Export to CSV</a>
       {{ batting|safe }}
     </div>
     
     <div class="table-container is-hidden" id="divPitching">
+      <a href="/projections/{{selected_date.strftime('%Y-%m-%d')}}?csv=pitching" class="button is-primary mb-3">Export to CSV</a>
       {{ pitching|safe }}
     </div>
    
@@ -29,13 +41,13 @@
 <script src="{{ url_for('static', filename='js/sortable.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 <script>
+
   function showBatting() {
     document.getElementById('divBatting').classList.remove("is-hidden")
     document.getElementById('divPitching').classList.add("is-hidden")
 
     document.getElementById('tabBatting').classList.add("is-active")
     document.getElementById('tabPitching').classList.remove("is-active")
-
   }
 
   function showPitching() {
@@ -44,20 +56,19 @@
     
     document.getElementById('tabBatting').classList.remove("is-active")
     document.getElementById('tabPitching').classList.add("is-active")
-
   }
 
   window.onload = function() {
-  document.getElementById("tabBatting").onclick = function() {
-    showBatting();
-    return false;
+    document.getElementById("tabBatting").onclick = function() {
+      showBatting();
+      return false;
+    }
+      
+    document.getElementById("tabPitching").onclick = function() {
+      showPitching();
+      return false;
+    }
   }
-    
-  document.getElementById("tabPitching").onclick = function() {
-    showPitching();
-    return false;
-  }
-}
 
 </script>
 {% endblock %}
