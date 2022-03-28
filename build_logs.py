@@ -62,7 +62,8 @@ def build_daily_gamelogs(date_string):
      # Get a list of game ids for games on this date
     games = get_games(date_string)
 
-    con = sqlite3.connect('gamelogs.db')
+    filepath = Path(__file__).parent
+    con = sqlite3.connect(filepath / "gamelogs.db")
     cur = con.cursor()
 
     # For each game, get the stats for every player
