@@ -2,6 +2,7 @@ import requests
 import datetime
 import calendar
 import sqlite3
+from pathlib import Path
 
 
 def main():
@@ -11,7 +12,9 @@ def main():
     #build_daily_gamelogs("2014-01-08")
 
 def setup_db():
-    con = sqlite3.connect("gamelogs.db")
+    
+    filepath = Path(__file__).parent
+    con = sqlite3.connect(filepath / "gamelogs.db")
     cur = con.cursor()
 
     # Create tables
