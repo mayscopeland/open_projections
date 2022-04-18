@@ -18,8 +18,9 @@ def project(projection_date_str, settings, is_batting):
     TOP_PA = 725
     MIN_PA = 400
 
-    TOP_BF = 850
-    MIN_BF_SP = 400
+    TOP_BF_SP = 850
+    MIN_BF_SP = 500
+    TOP_BF_RP = 330
     MIN_BF_RP = 200
 
     # Compared to the max appearances, what percentage does a player need to get a projection?
@@ -133,15 +134,12 @@ def project(projection_date_str, settings, is_batting):
 
     # Scale everyone's PA/BF in relation to the top player
     if is_batting:
-        # Scale hitters out between the set min and max PA based on 
         pa_factor = (TOP_PA - MIN_PA) / pr["proj_app"].max()
         pr[appearances] = pr["proj_app"] * pa_factor + MIN_PA
     else:
-        pa_factor = TOP_BF / pr["proj_app"].max()
-        pr[appearances] = pr["proj_app"] * pa_factor
- 
-        # For pitchers below the minimum, bump up their BF based on their starts
-        pr.loc[pr[appearances] < MIN_BF_RP, appearances] += MIN_BF_SP * pr["start_pct"] + MIN_BF_RP * (1 - pr["start_pct"])
+        pa_factor_sp = (TOP_BF_SP - MIN_BF_SP) / pr["proj_app"].max()
+        pa_factor_rp = (TOP_BF_RP - MIN_BF_RP) / pr.loc[pr["start_pct"] == 0, "proj_app"].max()
+        pr[appearances] = (pr["proj_app"] * pa_factor_sp + MIN_BF_SP) * pr["start_pct"] + (pr["proj_app"] * pa_factor_rp + MIN_BF_RP) * (1 - pr["start_pct"])
 
     # Apply projected rates out to the projected playing time
     for stat in settings["base_stats"]:
